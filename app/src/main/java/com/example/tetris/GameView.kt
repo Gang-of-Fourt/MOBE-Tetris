@@ -8,6 +8,7 @@ import android.util.DisplayMetrics
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import com.example.tetris.models.EnumSens
+import com.example.tetris.models.Grille
 import com.example.tetris.models.figures.*
 
 
@@ -17,15 +18,20 @@ class GameView(context: Context, val metrics: DisplayMetrics) : SurfaceHolder.Ca
     private var thread : GameThread
     var baton: Baton = Baton(Color.RED)
     var carre: Carre = Carre(Color.BLUE)
+    var carre2: Carre = Carre(Color.RED)
+    var carre3: Carre = Carre(Color.GREEN)
     var formeL: FormeL = FormeL(Color.CYAN)
     var formeT: FormeT = FormeT(Color.BLACK)
     var formeZ1: FormeZ1 = FormeZ1(Color.YELLOW)
     var formeZ2: FormeZ2 = FormeZ2(Color.GRAY)
+    var grille = Grille(20,10)
 
 
     init {
         holder.addCallback(this)
         thread = GameThread(holder, this)
+        carre2.coordonnees.posx=7
+        carre3.coordonnees.posx=9
     }
 
     override fun surfaceChanged(surfaceHolder: SurfaceHolder, i: Int, i1: Int, i2: Int) {}
@@ -37,41 +43,33 @@ class GameView(context: Context, val metrics: DisplayMetrics) : SurfaceHolder.Ca
         super.draw(canvas)
 
         if (canvas != null) {
-            val paint = Paint()
-            paint.setColor(Color.BLUE)
-
             canvas.drawColor(Color.WHITE)
-//            baton.draw(canvas)
-            println(canvas.height)
-            println(canvas.width)
             carre.draw(canvas)
-            baton.draw(canvas)
-//            canvas.drawRect(0F,0F,800F,1880F, paint);
+            grille.draw(canvas)
+//            carre.draw(canvas)
+//            carre2.draw(canvas)
+//            carre3.draw(canvas)
+//            baton.draw(canvas)
+//            canvas.drawRect(900F,1900F,1000F,2000F, paint);
 //            if (carre.hasItGround(canvas)){
 //                formeL.draw(canvas)
 //            }
             if (timer == 0){
-                if (!baton.hasItGround(canvas)){
-                    baton.updateCoord()
-//                    baton.rotate(EnumSens.SENS_HORAIRE)
-                }
                 if (!carre.hasItGround(canvas)){
                     carre.updateCoord()
-                    carre.rotate(EnumSens.SENS_HORAIRE)
+//                    baton.rotate(EnumSens.SENS_HORAIRE)
+                } else {
+                    grille.update(carre)
+                    grille.draw(canvas)
                 }
-
-
-//                baton.rotate(EnumSens.SENS_ANTIHORAIRE)
             }
         }
     }
 
 
     override fun surfaceCreated(holder: SurfaceHolder) {
-
         thread.setRunning(true)
         thread.start()
-
     }
 
     override fun surfaceDestroyed(holder: SurfaceHolder) {
