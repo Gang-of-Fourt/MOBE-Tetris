@@ -1,8 +1,8 @@
 package com.example.tetris.models
 
 class Bloc(
-    var color: String,
-    var position: Coordonnees
+    var color: Int,
+//    var position: Coordonnees
 ) {
 
 }
