@@ -8,15 +8,27 @@ import com.example.tetris.models.Figure
 
 
 
-class Baton(color : Int) : Figure("baton", Coordonnees(0,0), color) {
+class Baton(color : Int) : Figure("Baton", Coordonnees(0,0), color,4, 2 ) {
 
     init {
-        blocs = arrayOf(
-            arrayOf(null, null, null),
-            arrayOf(null, null, null),
-            arrayOf(Bloc(color), Bloc(color), Bloc(color))
+        rotate0 = arrayOf(
+            arrayOf(null, null, null, null),
+            arrayOf(null, null, null, null),
+            arrayOf(null, null, null, null),
+            arrayOf(Bloc(color), Bloc(color), Bloc(color), Bloc(color)),
 
         )
+
+        rotate1 = arrayOf(
+            arrayOf(null, Bloc(color), null, null),
+            arrayOf(null, Bloc(color), null, null),
+            arrayOf(null, Bloc(color), null, null),
+            arrayOf(null, Bloc(color), null, null),
+        )
+
+        blocs = rotate1
+
+
     }
 
  }

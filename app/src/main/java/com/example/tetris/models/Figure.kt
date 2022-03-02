@@ -9,24 +9,45 @@ open class Figure(
     var nom: String,
     var coordonnees: Coordonnees,
     var color : Int,
+    var hitBox : Int,
+    val nbRotate : Int
 ) : IRotatable {
 
-//    lateinit var blocs: Array<Array<Bloc>>
     lateinit var blocs: Array<Array<Bloc?>>
+    lateinit var rotate0: Array<Array<Bloc?>>
+    lateinit var rotate1: Array<Array<Bloc?>>
+    lateinit var rotate2: Array<Array<Bloc?>>
+    lateinit var rotate3: Array<Array<Bloc?>>
+    var currentotate : Int = 0
 
 
-    // Ratation d'une figure en choisissant le sens
-    override fun rotate(sens: EnumSens) { // fonction rotate tableau matrice carre
-        val newBlocs: Array<Array<Bloc?>> = Array(3) { Array(3) { null } }
-        for (i in 0..2){
-            for (j in 0..2){
-                val newCord = this.changeCoordBloc(Coordonnees(i, j), sens)
-                if(blocs[i][j] != null ) {
-                    newBlocs[newCord.posx][newCord.posy] = Bloc(color)
-                }
-            }
+    // Rotation d'une figure en choisissant le sens
+//    override fun rotate(sens: EnumSens) { // fonction rotate tableau matrice carre
+//        val newBlocs: Array<Array<Bloc?>> = Array(hitBox) { Array(hitBox) { null } }
+//        for (i in 0 until hitBox-1){
+//            for (j in 0 until hitBox-1){
+//                val newCord = this.changeCoordBloc(Coordonnees(i, j), sens)
+//                if(blocs[i][j] != null ) {
+//                    newBlocs[newCord.posx][newCord.posy] = Bloc(color)
+//                }
+//            }
+//        }
+//        blocs = newBlocs
+//    }
+
+    override fun rotate(sens: EnumSens) {
+        if (sens == EnumSens.SENS_HORAIRE){
+            currentotate = (currentotate+1)%nbRotate
         }
-        blocs = newBlocs
+        else {
+            currentotate = (currentotate-1)%nbRotate
+        }
+        when(currentotate){
+            0 -> blocs = rotate0
+            1-> blocs = rotate1
+            2-> blocs = rotate2
+            3-> blocs = rotate3
+        }
     }
 
     // Fonction pas du tout optimisée, mais par rapport a notre porjet, je pense pas qu'on
@@ -66,7 +87,7 @@ open class Figure(
     // Si la fihure a touché le bas de l'ecran, a revoir c'est très experimental
     fun hasItGround(canvas: Canvas?): Boolean {
         if (canvas != null) {
-            return coordonnees.posy * 100 >= canvas.height - 300
+            return coordonnees.posy * 100 >= canvas.height - hitBox*100
         }
         return false
     }
@@ -81,8 +102,8 @@ open class Figure(
         val paint = Paint()
 
         if (canvas != null) {
-            for (i in 0..2){
-                for (j in 0..2){
+            for (i in 0 until hitBox){
+                for (j in 0 until hitBox){
                     if( blocs[i][j] != null){
                         paint.setColor(blocs[i][j]!!.color)
                         canvas.drawRect(0F + (j*100) + (coordonnees.posx*100), 0F +(i*100) + (coordonnees.posy*100), 100F +(j*100) + (coordonnees.posx*100), 100F + (i*100)  + (coordonnees.posy*100), paint);

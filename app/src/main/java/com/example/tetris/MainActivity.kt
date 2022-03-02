@@ -34,6 +34,8 @@ class MainActivity : AppCompatActivity() {
             @Suppress("DEPRECATION")
             display.getMetrics(outMetrics)
         }
+        println(outMetrics.heightPixels)
+        println(outMetrics.widthPixels)
         setContentView(GameView(this, outMetrics))
 
     }
