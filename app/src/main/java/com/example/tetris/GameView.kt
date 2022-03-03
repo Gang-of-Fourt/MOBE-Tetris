@@ -32,6 +32,8 @@ class GameView(context: Context, val metrics: DisplayMetrics) : SurfaceHolder.Ca
         thread = GameThread(holder, this)
         carre2.coordonnees.posx=7
         carre3.coordonnees.posx=9
+        formeL.coordonnees.posx=4
+        formeL.rotate(EnumSens.SENS_HORAIRE)
     }
 
     override fun surfaceChanged(surfaceHolder: SurfaceHolder, i: Int, i1: Int, i2: Int) {}
@@ -45,6 +47,7 @@ class GameView(context: Context, val metrics: DisplayMetrics) : SurfaceHolder.Ca
         if (canvas != null) {
             canvas.drawColor(Color.WHITE)
             carre.draw(canvas)
+            formeL.draw(canvas)
             grille.draw(canvas)
 //            carre.draw(canvas)
 //            carre2.draw(canvas)
@@ -55,12 +58,16 @@ class GameView(context: Context, val metrics: DisplayMetrics) : SurfaceHolder.Ca
 //                formeL.draw(canvas)
 //            }
             if (timer == 0){
-                if (!carre.hasItGround(canvas)){
+                if (!carre.hasItGround(canvas, grille)){
                     carre.updateCoord()
 //                    baton.rotate(EnumSens.SENS_HORAIRE)
                 } else {
                     grille.update(carre)
-                    grille.draw(canvas)
+                    if(!formeL.hasItGround(canvas, grille)){
+                        formeL.updateCoord()
+                    } else {
+                        grille.update(formeL)
+                    }
                 }
             }
         }

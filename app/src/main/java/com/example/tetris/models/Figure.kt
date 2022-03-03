@@ -35,16 +35,44 @@ open class Figure(
         }
     }
 
-    fun updateCoord(){
-        coordonnees.posy += 1
-    }
-
     // Si la figure a touché le bas de l'ecran, a revoir c'est très experimental
-    fun hasItGround(canvas: Canvas?): Boolean {
-        if (canvas != null) {
-            return coordonnees.posy * 100 >= canvas.height - hitBox*100
+    fun hasItGround(canvas: Canvas?, grille : Grille): Boolean {
+//        if (coordonnees.posy >= grille.height) {
+//            return coordonnees.posy * 100 >= canvas.height - hitBox*100
+//        }
+        // touche le sol
+        if(coordonnees.posy >= grille.height - hitBox){
+            println("true1")
+            return true
+        }
+
+        val saveCoord : MutableList<Coordonnees> = mutableListOf()
+
+        for (i in 0 until hitBox) {
+            for (j in 0 until hitBox) {
+                if(blocs[i][j] != null){
+                    if (i == hitBox - 1){
+                        saveCoord.add(Coordonnees(coordonnees.posx + j, coordonnees.posy + i))
+                    } else if (blocs[i+1][j] == null){
+                        saveCoord.add(Coordonnees(coordonnees.posx + j, coordonnees.posy + i))
+                    }
+                }
+            }
+        }
+
+        saveCoord.forEach {
+            println(it.posx)
+            println(it.posy)
+            if (grille.cases[it.posy + 1][it.posx] != null){
+                println("true2")
+                return true
+            }
         }
         return false
+    }
+
+    fun updateCoord(){
+        coordonnees.posy += 1
     }
 
     // modifier les cordonée en ajoutant celle en paramètre

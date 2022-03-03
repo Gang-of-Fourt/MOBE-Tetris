@@ -12,7 +12,15 @@ class Grille(
 ) {
     var cases: MutableList<MutableList<Bloc?>> = MutableList(height) {MutableList(width) {null} }
     fun update(figure : Figure){
-        cases[figure.coordonnees.posy][figure.coordonnees.posx] = Bloc(Color.RED)
+//        cases[figure.coordonnees.posy][figure.coordonnees.posx] = Bloc(Color.RED)
+        for (i in 0 until figure.hitBox) {
+            for (j in 0 until figure.hitBox) {
+                if (figure.blocs[i][j] != null) {
+                    cases[figure.coordonnees.posy + i][figure.coordonnees.posx + j] =
+                        Bloc(Color.RED)
+                }
+            }
+        }
     }
 
     fun draw(canvas : Canvas) {
