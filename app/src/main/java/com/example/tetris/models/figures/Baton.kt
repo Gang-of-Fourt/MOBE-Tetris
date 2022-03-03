@@ -8,7 +8,7 @@ import com.example.tetris.models.Figure
 
 
 
-class Baton(color : Int) : Figure("Baton", Coordonnees(0,0), color,4, 2 ) {
+class Baton(color : Int) : Figure("Baton", Coordonnees(4,0), color,4, 2 ) {
 
     init {
         rotate0 = arrayOf(

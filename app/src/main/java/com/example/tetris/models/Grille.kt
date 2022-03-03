@@ -17,7 +17,7 @@ class Grille(
             for (j in 0 until figure.hitBox) {
                 if (figure.blocs[i][j] != null) {
                     cases[figure.coordonnees.posy + i][figure.coordonnees.posx + j] =
-                        Bloc(Color.RED)
+                        figure.blocs[i][j]
                 }
             }
         }

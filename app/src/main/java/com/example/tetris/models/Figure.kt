@@ -13,21 +13,29 @@ open class Figure(
     val nbRotate : Int
 ) : IRotatable {
 
+    //La figure courante
     lateinit var blocs: Array<Array<Bloc?>>
+
+    // Les rotation possible de la figure (Peux avoir mois de 4 roation possibe, comme le Baton)
     lateinit var rotate0: Array<Array<Bloc?>>
     lateinit var rotate1: Array<Array<Bloc?>>
     lateinit var rotate2: Array<Array<Bloc?>>
     lateinit var rotate3: Array<Array<Bloc?>>
-    var currentotate : Int = 0
 
+    // L'id de la roation courrante (0 pour rotate0, 1 pour rotate1 ect...)
+    var currentRotate : Int = 0
+
+
+    // BUG -> Si la figure et a droite de l'ecran et qu'on rotate, crash
+    // BUG -> Si on rotate a coté d'une figure, pb de colision
     override fun rotate(sens: EnumSens) {
         if (sens == EnumSens.SENS_HORAIRE){
-            currentotate = (currentotate+1)%nbRotate
+            currentRotate = (currentRotate+1)%nbRotate
         }
         else {
-            currentotate = (currentotate-1)%nbRotate
+            currentRotate = (currentRotate-1)%nbRotate
         }
-        when(currentotate){
+        when(currentRotate){
             0 -> blocs = rotate0
             1-> blocs = rotate1
             2-> blocs = rotate2
@@ -35,14 +43,10 @@ open class Figure(
         }
     }
 
-    // Si la figure a touché le bas de l'ecran, a revoir c'est très experimental
-    fun hasItGround(canvas: Canvas?, grille : Grille): Boolean {
-//        if (coordonnees.posy >= grille.height) {
-//            return coordonnees.posy * 100 >= canvas.height - hitBox*100
-//        }
+    // Si la figure a touché le sol (bas d'ecran ou une autre figure), à revoir c'est très experimental
+    fun hasItGround(grille : Grille): Boolean {
         // touche le sol
         if(coordonnees.posy >= grille.height - hitBox){
-            println("true1")
             return true
         }
 
@@ -61,26 +65,78 @@ open class Figure(
         }
 
         saveCoord.forEach {
-            println(it.posx)
-            println(it.posy)
             if (grille.cases[it.posy + 1][it.posx] != null){
-                println("true2")
                 return true
             }
         }
         return false
     }
 
-    fun updateCoord(){
+    // Si la figure n'a pas d'obstacle a sa droite
+    private fun hasNoFigureInRight(grille : Grille) : Boolean{
+        if(coordonnees.posx >= grille.width ){
+            return false
+        }
+        val saveCoord : MutableList<Coordonnees> = mutableListOf()
+        for (i in 0 until hitBox) {
+            for (j in 0 until hitBox) {
+                if(blocs[i][j] != null){
+                    if (j == hitBox-1){
+                        saveCoord.add(Coordonnees(coordonnees.posx + j, coordonnees.posy + i))
+                    } else if (blocs[i][j+1] == null){
+                        saveCoord.add(Coordonnees(coordonnees.posx + j, coordonnees.posy + i))
+                    }
+                }
+            }
+        }
+        saveCoord.forEach {
+            if (grille.cases[it.posy][it.posx + 1] != null){
+                return false
+            }
+        }
+        return true
+    }
+
+    // Si la figure n'a pas d'obstacle a sa gauche
+    private fun hasNoFigureInLeft(grille : Grille) : Boolean{
+        if(coordonnees.posx <= 0 ){
+            return false
+        }
+        val saveCoord : MutableList<Coordonnees> = mutableListOf()
+        for (i in 0 until hitBox) {
+            for (j in 0 until hitBox) {
+                if(blocs[i][j] != null){
+                    if (j == 0){
+                        saveCoord.add(Coordonnees(coordonnees.posx + j, coordonnees.posy + i))
+                    } else if (blocs[i][j-1] == null){
+                        saveCoord.add(Coordonnees(coordonnees.posx + j, coordonnees.posy + i))
+                    }
+                }
+            }
+        }
+        saveCoord.forEach {
+            if (grille.cases[it.posy][it.posx - 1] != null){
+                return false
+            }
+        }
+        return true
+    }
+
+    // Modifie les coordonée de la figure et ajoutant de 1 les coordonées y et en prenant en compte les
+    // valeurs de l'acceléromètre
+    fun updateCoord(valuesAcceleromoetre : MutableList<Float>, grille : Grille){
         coordonnees.posy += 1
+        if (valuesAcceleromoetre[0] > 0.5 ){
+            if(coordonnees.posx > 0 && hasNoFigureInLeft(grille))
+                coordonnees.posx--
+        }
+        if (valuesAcceleromoetre[0] < -0.5 ){
+            if(coordonnees.posx < grille.width-1 && hasNoFigureInRight(grille))
+            coordonnees.posx++
+        }
     }
 
-    // modifier les cordonée en ajoutant celle en paramètre
-    fun updateCoord(newCoord : Coordonnees){
-        coordonnees.posx += newCoord.posx
-        coordonnees.posy += newCoord.posy
-    }
-
+    // Dessine la figure
     fun draw(canvas: Canvas?){
         val paint = Paint()
 

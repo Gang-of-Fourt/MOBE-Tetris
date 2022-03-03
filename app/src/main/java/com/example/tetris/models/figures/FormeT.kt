@@ -4,7 +4,7 @@ import com.example.tetris.models.Bloc
 import com.example.tetris.models.Coordonnees
 import com.example.tetris.models.Figure
 
-class FormeT(color : Int) : Figure("T", Coordonnees(0,0), color, 3, 4) {
+class FormeT(color : Int) : Figure("T", Coordonnees(4,0), color, 3, 4) {
     init {
         rotate0 = arrayOf (
             arrayOf(null, null, null),

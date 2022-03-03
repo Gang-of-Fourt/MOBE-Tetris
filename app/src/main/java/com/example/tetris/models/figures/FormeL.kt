@@ -5,7 +5,7 @@ import com.example.tetris.models.Coordonnees
 import com.example.tetris.models.EnumSens
 import com.example.tetris.models.Figure
 
-class FormeL(color : Int) : Figure("L", Coordonnees(0,0), color, 3, 4) {
+class FormeL(color : Int) : Figure("L", Coordonnees(4,0), color, 3, 4) {
 
     init {
         rotate0 = arrayOf (
