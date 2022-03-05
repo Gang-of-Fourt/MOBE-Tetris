@@ -10,7 +10,9 @@ open class Figure(
     var coordonnees: Coordonnees,
     var color : Int,
     var hitBox : Int,
-    val nbRotate : Int
+    val nbRotate : Int,
+    // L'id de la roation courrante (0 pour rotate0, 1 pour rotate1 ect...)
+    var currentRotate : Int
 ) : IRotatable {
 
     //La figure courante
@@ -22,51 +24,119 @@ open class Figure(
     lateinit var rotate2: Array<Array<Bloc?>>
     lateinit var rotate3: Array<Array<Bloc?>>
 
-    // L'id de la roation courrante (0 pour rotate0, 1 pour rotate1 ect...)
-    var currentRotate : Int = 0
+    // Vérifie si la figure est dans un obstacle (extrémité grille ou autre figure)
+    // et précise si l'obstacle est a droite, a gauche ou des 2 cotés
+    private fun isInObstacle(grille : Grille) : EnumObstacle{
+        var leftObstacle = false
+        var rightObstacle = false
+        for (i in 0 until hitBox) {
+            for (j in 0 until hitBox) {
+                if(blocs[i][j] != null){
+                    if (coordonnees.posx + j >= grille.width){
+                        rightObstacle = true
+                    }
+                    else if(coordonnees.posx + j < 0){
+                        leftObstacle = true
+                    }
+                    if(coordonnees.posx + j >= 0 && coordonnees.posx + j < grille.width) {
+                        if (grille.cases[coordonnees.posy + i][coordonnees.posx + j] != null) {
+                            if (j == 0) {
+                                leftObstacle = true
+                            } else if (j == hitBox - 1) {
+                                rightObstacle = true
+                            } else {
+                                //TODO voir ce cas la plus précisement
+                                rightObstacle = true
+                                leftObstacle = true
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return analyseResult(leftObstacle, rightObstacle, grille)
+    }
 
+    // Analyse le traitement de la fonction ci dessus (isInObstacle)
+    private fun analyseResult(leftObstacle : Boolean, rightObstacle : Boolean, grille: Grille) : EnumObstacle{
+        if(leftObstacle && rightObstacle){
+            return EnumObstacle.RIGHT_AND_LEFT_OBSTACLE
+        } else if (rightObstacle){
+            if (hasNoFigureInLeft(grille)) {
+                return EnumObstacle.RIGHT_OBSTACLE
+            } else {
+                return EnumObstacle.RIGHT_AND_LEFT_OBSTACLE
+            }
+        } else if (leftObstacle){
+            if (hasNoFigureInRight(grille)) {
+                return EnumObstacle.LEFT_OBSTACLE
+            } else {
+                return EnumObstacle.RIGHT_AND_LEFT_OBSTACLE
+            }
+        } else {
+            return EnumObstacle.NO_OBSTCALE
+        }
+    }
 
     // BUG -> Si la figure et a droite de l'ecran et qu'on rotate, crash
     // BUG -> Si on rotate a coté d'une figure, pb de colision
-    override fun rotate(sens: EnumSens) {
+    override fun rotate(sens: EnumSens, grille : Grille) {
+
+        // On save la figure courrante avec son indice de rotation au cas ou la roation ne peut finalement
+        //pas avoir lieu
+        val saveBlocs = blocs.copyOf()
+        val saveCurrentRotate = currentRotate
+
+        // Change l'indice de rotation
         if (sens == EnumSens.SENS_HORAIRE){
             currentRotate = (currentRotate+1)%nbRotate
         }
         else {
             currentRotate = (currentRotate-1)%nbRotate
         }
+
+        //Fait la rotation
         when(currentRotate){
             0 -> blocs = rotate0
-            1-> blocs = rotate1
-            2-> blocs = rotate2
-            3-> blocs = rotate3
+            1 -> blocs = rotate1
+            2 -> blocs = rotate2
+            3 -> blocs = rotate3
+        }
+
+        var res : EnumObstacle
+        //Tans que la figure est dans une autre figure ou en dehors de la grille, on la déplace suivant si l'obstacle
+        //est à gauche ou à droite
+        do {
+            res = isInObstacle(grille)
+            if (res == EnumObstacle.LEFT_OBSTACLE){
+                coordonnees.posx++
+            } else if (res == EnumObstacle.RIGHT_OBSTACLE) {
+                coordonnees.posx--
+            }
+
+        } while(res != EnumObstacle.NO_OBSTCALE && res !=EnumObstacle.RIGHT_AND_LEFT_OBSTACLE)
+
+        // Si le figure est concé entre 2 ovsatcle, on annule la rotation
+        if (res == EnumObstacle.RIGHT_AND_LEFT_OBSTACLE){
+            blocs = saveBlocs
+            currentRotate = saveCurrentRotate
         }
     }
 
-    // Si la figure a touché le sol (bas d'ecran ou une autre figure), à revoir c'est très experimental
+    // Si la figure a touché le sol (bas d'ecran ou une autre figure)
     fun hasItGround(grille : Grille): Boolean {
-        // touche le sol
-        if(coordonnees.posy >= grille.height - hitBox){
-            return true
-        }
-
-        val saveCoord : MutableList<Coordonnees> = mutableListOf()
-
+        // Parcour tous les blocs de la figure, pour chaque blocs, vérifie si la figure se trouve au dessus d'un obstacle
         for (i in 0 until hitBox) {
             for (j in 0 until hitBox) {
                 if(blocs[i][j] != null){
-                    if (i == hitBox - 1){
-                        saveCoord.add(Coordonnees(coordonnees.posx + j, coordonnees.posy + i))
-                    } else if (blocs[i+1][j] == null){
-                        saveCoord.add(Coordonnees(coordonnees.posx + j, coordonnees.posy + i))
+                    if (coordonnees.posy + i + 1 >= grille.height){
+                        return true
                     }
-                }
-            }
-        }
+                    if (grille.cases[coordonnees.posy + i + 1][coordonnees.posx + j] != null){
+                        return true
+                    }
 
-        saveCoord.forEach {
-            if (grille.cases[it.posy + 1][it.posx] != null){
-                return true
+                }
             }
         }
         return false
@@ -74,24 +144,20 @@ open class Figure(
 
     // Si la figure n'a pas d'obstacle a sa droite
     private fun hasNoFigureInRight(grille : Grille) : Boolean{
-        if(coordonnees.posx >= grille.width ){
-            return false
-        }
-        val saveCoord : MutableList<Coordonnees> = mutableListOf()
+        // Parcour tous les blocs de la figure, pour chaque bloc, vérifie s'il y a un obstacle à droite de la figure
+        // que se soit l'extrémité droite de la grille ou un obstacle a droite
         for (i in 0 until hitBox) {
             for (j in 0 until hitBox) {
                 if(blocs[i][j] != null){
-                    if (j == hitBox-1){
-                        saveCoord.add(Coordonnees(coordonnees.posx + j, coordonnees.posy + i))
-                    } else if (blocs[i][j+1] == null){
-                        saveCoord.add(Coordonnees(coordonnees.posx + j, coordonnees.posy + i))
+                    // Si la figure se trouve  l'extrémité droite
+                    if (coordonnees.posx + j + 1 >= grille.width){
+                        return false
+                    }
+                    // S'il y a un bloc a droite de la figure
+                    else if (grille.cases[coordonnees.posy + i][coordonnees.posx + j+ 1] != null){
+                        return false
                     }
                 }
-            }
-        }
-        saveCoord.forEach {
-            if (grille.cases[it.posy][it.posx + 1] != null){
-                return false
             }
         }
         return true
@@ -99,26 +165,20 @@ open class Figure(
 
     // Si la figure n'a pas d'obstacle a sa gauche
     private fun hasNoFigureInLeft(grille : Grille) : Boolean{
-        if(coordonnees.posx <= 0 ){
-            return false
-        }
-        val saveCoord : MutableList<Coordonnees> = mutableListOf()
+        // Meme fonctionnement que la fonction ci-dessus (hasNoFigureInRight)
         for (i in 0 until hitBox) {
             for (j in 0 until hitBox) {
                 if(blocs[i][j] != null){
-                    if (j == 0){
-                        saveCoord.add(Coordonnees(coordonnees.posx + j, coordonnees.posy + i))
-                    } else if (blocs[i][j-1] == null){
-                        saveCoord.add(Coordonnees(coordonnees.posx + j, coordonnees.posy + i))
+                    if (coordonnees.posx + j - 1 < 0){
+                        return false
+                    }
+                    if (grille.cases[coordonnees.posy + i][coordonnees.posx + j - 1] != null){
+                        return false
                     }
                 }
             }
         }
-        saveCoord.forEach {
-            if (grille.cases[it.posy][it.posx - 1] != null){
-                return false
-            }
-        }
+//
         return true
     }
 
@@ -127,12 +187,12 @@ open class Figure(
     fun updateCoord(valuesAcceleromoetre : MutableList<Float>, grille : Grille){
         coordonnees.posy += 1
         if (valuesAcceleromoetre[0] > 0.5 ){
-            if(coordonnees.posx > 0 && hasNoFigureInLeft(grille))
+            if(hasNoFigureInLeft(grille))
                 coordonnees.posx--
         }
         if (valuesAcceleromoetre[0] < -0.5 ){
-            if(coordonnees.posx < grille.width-1 && hasNoFigureInRight(grille))
-            coordonnees.posx++
+            if(hasNoFigureInRight(grille))
+                coordonnees.posx++
         }
     }
 

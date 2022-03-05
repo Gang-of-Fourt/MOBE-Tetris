@@ -8,14 +8,14 @@ import com.example.tetris.models.Figure
 
 
 
-class Baton(color : Int) : Figure("Baton", Coordonnees(4,0), color,4, 2 ) {
+class Baton(color : Int, currentRotate: Int) : Figure("Baton", Coordonnees(4,0), color,4, 2, currentRotate ) {
 
     init {
         rotate0 = arrayOf(
             arrayOf(null, null, null, null),
             arrayOf(null, null, null, null),
-            arrayOf(null, null, null, null),
             arrayOf(Bloc(color), Bloc(color), Bloc(color), Bloc(color)),
+            arrayOf(null, null, null, null),
 
         )
 
@@ -26,9 +26,14 @@ class Baton(color : Int) : Figure("Baton", Coordonnees(4,0), color,4, 2 ) {
             arrayOf(null, Bloc(color), null, null),
         )
 
-        blocs = rotate1
+        blocs = initFigure()
+    }
 
-
+    private fun initFigure() : Array<Array<Bloc?>>{
+        when(currentRotate%nbRotate){
+            0 -> return rotate0
+            else -> return rotate1
+        }
     }
 
  }

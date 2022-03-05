@@ -4,7 +4,7 @@ import com.example.tetris.models.Bloc
 import com.example.tetris.models.Coordonnees
 import com.example.tetris.models.Figure
 
-class Carre(color : Int) : Figure("Carre", Coordonnees(4,0), color, 2, 1) {
+class Carre(color : Int) : Figure("Carre", Coordonnees(4,0), color, 2, 1, 0) {
 
     init {
         rotate0 = arrayOf(

@@ -16,7 +16,7 @@ class GameView(context: Context) : SurfaceHolder.Callback , SurfaceView(context)
 
     private var timer : Int = 0
     private var thread : GameThread
-    var grille = Grille(20,10)
+    var grille = Grille(20,11)
     var valuesAccelerometer : MutableList<Float> = MutableList(3) {0F}
     var currentForm : Figure = RandomFigure.chooseFigure()
 
@@ -29,7 +29,7 @@ class GameView(context: Context) : SurfaceHolder.Callback , SurfaceView(context)
     override fun onTouchEvent(event: MotionEvent): Boolean {
 
         when (event.action) {
-            MotionEvent.ACTION_DOWN -> if (!currentForm.hasItGround(grille)) currentForm.rotate(EnumSens.SENS_HORAIRE)
+            MotionEvent.ACTION_DOWN -> if (!currentForm.hasItGround(grille)) currentForm.rotate(EnumSens.SENS_HORAIRE, grille)
         }
         return true
     }
@@ -37,7 +37,7 @@ class GameView(context: Context) : SurfaceHolder.Callback , SurfaceView(context)
     override fun surfaceChanged(surfaceHolder: SurfaceHolder, i: Int, i1: Int, i2: Int) {}
 
     fun update() {
-        timer = (timer + 1 ) % 20
+        timer = (timer + 1 ) % 15
     }
     override fun draw(canvas: Canvas?) {
         super.draw(canvas)
@@ -75,21 +75,4 @@ class GameView(context: Context) : SurfaceHolder.Callback , SurfaceView(context)
         }
     }
 
-//    override fun onSensorChanged(event: SensorEvent?) {
-//        when (event?.sensor?.type) {
-//            Sensor.TYPE_GYROSCOPE -> {
-//                valuesGyroscope[0] = event.values[0]
-//                valuesGyroscope[1] = event.values[1]
-//                valuesGyroscope[2] = event.values[2]
-//                println(valuesGyroscope[0])
-//                println(valuesGyroscope[1])
-//                println(valuesGyroscope[2])
-//            }
-//        }
-//
-//    }
-//
-//    override fun onAccuracyChanged(sensor: Sensor?, p1: Int) {
-//        TODO("Not yet implemented")
-//    }
 }

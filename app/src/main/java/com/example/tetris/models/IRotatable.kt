@@ -1,5 +1,5 @@
 package com.example.tetris.models
 
 interface IRotatable {
-    fun rotate(sens: EnumSens);
+    fun rotate(sens: EnumSens, grille : Grille);
 }

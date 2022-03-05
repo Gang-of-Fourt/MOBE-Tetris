@@ -4,7 +4,7 @@ import com.example.tetris.models.Bloc
 import com.example.tetris.models.Coordonnees
 import com.example.tetris.models.Figure
 
-class FormeZ2(color : Int) : Figure("Z2", Coordonnees(4,0), color, 3, 2) {
+class FormeZ2(color : Int, currentRotate : Int) : Figure("Z2", Coordonnees(4,0), color, 3, 2, currentRotate) {
 
     init{
         rotate0 = arrayOf (
@@ -17,6 +17,13 @@ class FormeZ2(color : Int) : Figure("Z2", Coordonnees(4,0), color, 3, 2) {
             arrayOf(Bloc(color), Bloc(color), null),
             arrayOf(null, Bloc(color), Bloc(color))
         )
-        blocs = rotate0
+        blocs = initFigure()
+    }
+
+    private fun initFigure() : Array<Array<Bloc?>>{
+        when(currentRotate){
+            0 -> return rotate0
+            else -> return rotate1
+        }
     }
 }

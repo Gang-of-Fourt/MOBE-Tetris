@@ -4,7 +4,7 @@ import com.example.tetris.models.Bloc
 import com.example.tetris.models.Coordonnees
 import com.example.tetris.models.Figure
 
-class FormeT(color : Int) : Figure("T", Coordonnees(4,0), color, 3, 4) {
+class FormeT(color : Int, currentRotate : Int) : Figure("T", Coordonnees(4,0), color, 3, 4, currentRotate) {
     init {
         rotate0 = arrayOf (
             arrayOf(null, null, null),
@@ -19,18 +19,28 @@ class FormeT(color : Int) : Figure("T", Coordonnees(4,0), color, 3, 4) {
         )
 
         rotate2 = arrayOf(
+            arrayOf(null, null, null),
             arrayOf(Bloc(color), Bloc(color), Bloc(color)),
             arrayOf(null, Bloc(color), null),
-            arrayOf(null, null, null)
+
         )
 
         rotate3 = arrayOf(
-            arrayOf(null, null, Bloc(color)),
-            arrayOf(null, Bloc(color), Bloc(color)),
-            arrayOf(null, null, Bloc(color))
+            arrayOf( null, Bloc(color), null),
+            arrayOf( Bloc(color), Bloc(color), null),
+            arrayOf( null,Bloc(color), null)
         )
 
-        blocs = rotate0
+        blocs = initFigure()
+    }
+
+    private fun initFigure() : Array<Array<Bloc?>>{
+        when(currentRotate){
+            0 -> return rotate0
+            1 -> return rotate1
+            2 -> return rotate2
+            else -> return rotate3
+        }
     }
 
 }
