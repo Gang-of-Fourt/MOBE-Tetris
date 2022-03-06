@@ -43,8 +43,8 @@ class Grille(
             println("Lines = " + it)
             for (j in 0 until width) {
                 println("COORDONEE" + j)
-//                dropBlocs(Coordonnees(it, j))
-                cases[it][j] = null
+                dropBlocs(Coordonnees(j, it))
+//                cases[it][j] = null
             }
         }
     }
@@ -66,6 +66,15 @@ class Grille(
             }
         }
         return liste
+    }
+
+    fun isGameOver() : Boolean{
+        for (i in 0 until width) {
+           if (cases[0][i] != null){
+               return true
+           }
+        }
+        return false
     }
 
     // Dessine le contenue de la grille

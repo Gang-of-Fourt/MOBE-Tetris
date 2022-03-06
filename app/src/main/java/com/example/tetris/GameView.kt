@@ -42,7 +42,7 @@ class GameView(context: Context) : SurfaceHolder.Callback , SurfaceView(context)
     override fun draw(canvas: Canvas?) {
         super.draw(canvas)
 
-        if (canvas != null) {
+        if (canvas != null && !grille.isGameOver()) {
             canvas.drawColor(Color.WHITE)
             currentForm.draw(canvas)
             grille.draw(canvas)
@@ -59,6 +59,8 @@ class GameView(context: Context) : SurfaceHolder.Callback , SurfaceView(context)
                     }
                 }
             }
+        } else {
+            grille.draw(canvas!!)
         }
     }
 
