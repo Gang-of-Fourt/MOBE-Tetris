@@ -52,6 +52,11 @@ class GameView(context: Context) : SurfaceHolder.Callback , SurfaceView(context)
                 } else {
                     grille.update(currentForm)
                     currentForm = RandomFigure.chooseFigure()
+
+                    val lineFull = grille.isLineFull()
+                    if (lineFull.isNotEmpty()){
+                        grille.deletLines(lineFull)
+                    }
                 }
             }
         }

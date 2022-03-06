@@ -10,6 +10,7 @@ class RandomFigure {
         fun chooseFigure() : Figure {
             val randomId = Random.nextInt(0, 6)
             val color = Color.argb(Random.nextInt(100, 255), Random.nextInt(100, 255), Random.nextInt(100, 255), 1)
+            return Baton(color, 1)
             when (randomId) {
                 0 -> return Baton(color, Random.nextInt(0, 2))
                 1 -> return Carre(color)

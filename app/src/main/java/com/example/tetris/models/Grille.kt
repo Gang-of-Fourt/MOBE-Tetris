@@ -10,9 +10,10 @@ class Grille(
     var width : Int,
 
 ) {
-    var cases: MutableList<MutableList<Bloc?>> = MutableList(height) {MutableList(width) {null} }
+    var cases: MutableList<MutableList<Bloc?>> = MutableList(height) {MutableList(width+2) {null} }
+
+    // Met la figure donnée en paramètre dans la grille
     fun update(figure : Figure){
-//        cases[figure.coordonnees.posy][figure.coordonnees.posx] = Bloc(Color.RED)
         for (i in 0 until figure.hitBox) {
             for (j in 0 until figure.hitBox) {
                 if (figure.blocs[i][j] != null) {
@@ -23,6 +24,51 @@ class Grille(
         }
     }
 
+
+    private fun dropBlocs(coordonnees: Coordonnees){
+
+        var posy = coordonnees.posy
+        cases[posy][coordonnees.posx] = null
+        while( posy > 1 ) {
+            cases[posy][coordonnees.posx] =
+                cases[posy - 1][coordonnees.posx]
+            posy--
+        }
+        cases[0][coordonnees.posx] = null
+
+    }
+
+    fun deletLines(lines : List<Int>){
+        lines.forEach {
+            println("Lines = " + it)
+            for (j in 0 until width) {
+                println("COORDONEE" + j)
+//                dropBlocs(Coordonnees(it, j))
+                cases[it][j] = null
+            }
+        }
+    }
+
+
+    // Vérifie si une  ou plusieurs lignes sont remplies et retourne leurs coordonée dans une liste
+    fun isLineFull() : List<Int>{
+        var blocInLine : Int
+        val liste = mutableListOf<Int>()
+        for (i in 0 until height){
+            blocInLine = 0
+            for (j in 0 until width){
+                if(cases[i][j] != null){
+                    blocInLine++
+                }
+            }
+            if (blocInLine == width){
+                liste.add(i)
+            }
+        }
+        return liste
+    }
+
+    // Dessine le contenue de la grille
     fun draw(canvas : Canvas) {
         for (i in 0 until height){
             for (j in 0 until width){
@@ -30,8 +76,11 @@ class Grille(
                     val paint = Paint()
                     paint.color = cases[i][j]!!.color
                     canvas.drawRect(0F + (j*100), 0F +(i*100), 100F +(j*100), 100F + (i*100), paint);
+//                    canvas.drawText("test",0, 1, 50F, 50F, paint)
+
                 }
             }
         }
     }
+
 }
