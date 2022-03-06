@@ -9,10 +9,9 @@ open class Figure(
     var nom: String,
     var coordonnees: Coordonnees,
     var color : Int,
-    val hitBox : Int,
-    val nbRotate : Int,
-    // L'id de la roation courrante (0 pour rotate0, 1 pour rotate1 ect...)
-    var currentRotate : Int
+    val hitBox : Int, // La taille de sa hitbox
+    val nbRotate : Int, // Le nombre de rotation possible
+    var currentRotate : Int // L'id de la roation courrante (0 pour rotate0, 1 pour rotate1 ect...)
 ) : IRotatable {
 
     //La figure courante
@@ -30,19 +29,24 @@ open class Figure(
         return saveFigure
     }
 
+    // Vérifie sir la figure courante est dans un obstacle (autre figure ou en dehors de la grille)
     private fun isInObstacle(grille : Grille) : Boolean{
         for (i in 0 until hitBox) {
             for (j in 0 until hitBox) {
                 if(blocs[i][j] != null){
+                    // Si un bloc est à droite de la grille
                     if (coordonnees.posx + j >= grille.width){
                         return true
                     }
+                    // Si un bloc est à gauche de la grille
                     else if(coordonnees.posx + j < 0){
                         return true
                     }
+                    // Si un bloc est sous la grille
                     else if (coordonnees.posy + i >= grille.height){
                         return true
                     }
+                    // Si un bloc est dans un autre bloc
                     else if (grille.cases[coordonnees.posy + i][coordonnees.posx + j] != null) {
                         return true
                     }
@@ -52,16 +56,11 @@ open class Figure(
         return false
     }
 
-    //TODO BUG -> figure baton, crash quand rorate quand il est collé à droite de l'ecran en pos verticale
+    // Effectue la rotation de la figure courante
     override fun rotate(sens: EnumSens, grille : Grille) {
-
         // On save la figure courrante avec son indice de rotation au cas ou la roation ne peut finalement
         // pas avoir lieu
-
         val saveFigure = doCopy()
-//        val b = blocs.copyOf()
-//        val sc = currentRotate
-//        val scx = coordonnees.posx
 
         // Change l'indice de rotation
         if (sens == EnumSens.SENS_HORAIRE){
@@ -79,7 +78,7 @@ open class Figure(
             3 -> blocs = rotate3
         }
 
-        // Si le figure est concé entre 2 ovsatcle, on annule la rotation
+        // Si le figure se trouve dans un obstacle apres sa rotation, l'annule, la rotation est donc impossible
         if (isInObstacle(grille)){
             blocs = saveFigure.blocs.copyOf()
             currentRotate = saveFigure.currentRotate
@@ -121,7 +120,6 @@ open class Figure(
     }
 
 
-
     // Modifie les coordonée de la figure et ajoutant de 1 les coordonées y et en prenant en compte les
     // valeurs de l'acceléromètre
     fun updateCoord(valuesAcceleromoetre : MutableList<Float>, grille : Grille){
@@ -144,8 +142,7 @@ open class Figure(
                 for (j in 0 until hitBox){
                     if( blocs[i][j] != null){
                         blocs[i][j]!!.color = color
-                        //TODO a modifier
-                        paint.color = color
+                        paint.color = blocs[i][j]!!.color
                         canvas.drawRect(
                             0F + (j*100) + (coordonnees.posx*100),
                             0F +(i*100) + (coordonnees.posy*100),

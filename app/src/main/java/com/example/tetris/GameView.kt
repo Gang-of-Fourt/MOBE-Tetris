@@ -26,9 +26,10 @@ class GameView(context: Context) : SurfaceHolder.Callback , SurfaceView(context)
         thread = GameThread(holder, this)
     }
 
+    //Si l'ecran est touché
     override fun onTouchEvent(event: MotionEvent): Boolean {
-
         when (event.action) {
+            // Appelle la fonciton de rotation si celle ci n'a pas touchée le sol
             MotionEvent.ACTION_DOWN -> if (!currentForm.hasItGround(grille)) currentForm.rotate(EnumSens.SENS_HORAIRE, grille)
         }
         return true
@@ -36,30 +37,38 @@ class GameView(context: Context) : SurfaceHolder.Callback , SurfaceView(context)
 
     override fun surfaceChanged(surfaceHolder: SurfaceHolder, i: Int, i1: Int, i2: Int) {}
 
+    // Incremente le timer, plus le modulo est grand, plus le jeu sera lent
     fun update() {
         timer = (timer + 1 ) % 15
     }
+
+
     override fun draw(canvas: Canvas?) {
         super.draw(canvas)
 
+        // Tans que le joueur n'a pas perdu la partie
         if (canvas != null && !grille.isGameOver()) {
             canvas.drawColor(Color.WHITE)
             currentForm.draw(canvas)
             grille.draw(canvas)
+
+            // A chaque fois que le timer est reset, le jeu vancera d'une frame
+            // cad qu'il calculera si la piece va doite ou gauche, si elle touche le sol etc..
             if (timer == 0){
+                // Si la figure courante n'a pas touché le sol
                 if (!currentForm.hasItGround(grille)){
                     currentForm.updateCoord(valuesAccelerometer, grille)
-                } else {
-                    grille.update(currentForm)
-                    currentForm = RandomFigure.chooseFigure()
-
-                    val lineFull = grille.isLineFull()
+                } else { // Si la figure courante a touché le sol
+                    grille.update(currentForm) // Ajoute la figure courante à la grille
+                    currentForm = RandomFigure.chooseFigure() // choisi une nouvelle figure
+                    val lineFull = grille.isLineFull() // Vérifie si une ligne de la grille est remplie
                     if (lineFull.isNotEmpty()){
-                        grille.deletLines(lineFull)
+                        grille.deletLines(lineFull) // supprime les lignes remplies si eil y en a
                     }
                 }
             }
         } else {
+            // Dessine uniquement les fgigures qui composent la grille si le joueur a perdu sa partie
             grille.draw(canvas!!)
         }
     }

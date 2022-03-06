@@ -8,8 +8,6 @@ class GameThread (var surfaceHolder : SurfaceHolder , var gameView : GameView) :
 
     private var running : Boolean = false
 
-//    private val r = Random.nextInt(-50, 300).toFloat()
-
     fun setRunning(isRunning: Boolean) {
         running = isRunning
     }

@@ -5,7 +5,6 @@ import android.graphics.Color
 import android.graphics.Paint
 
 class Grille(
-//    var taille: String,
     var height : Int,
     var width : Int,
 
@@ -25,8 +24,9 @@ class Grille(
     }
 
 
+    // Permet de supprimer un bloc de la grille, avec ses coordonnees en paramètres
+    // en faisant ''tomber'' les bocs au dessus de lui
     private fun dropBlocs(coordonnees: Coordonnees){
-
         var posy = coordonnees.posy
         cases[posy][coordonnees.posx] = null
         while( posy > 1 ) {
@@ -38,13 +38,13 @@ class Grille(
 
     }
 
+    // Supprime une ligne de la grille en faisait tomber celle au dessus d'elle
     fun deletLines(lines : List<Int>){
         lines.forEach {
             println("Lines = " + it)
             for (j in 0 until width) {
                 println("COORDONEE" + j)
                 dropBlocs(Coordonnees(j, it))
-//                cases[it][j] = null
             }
         }
     }
@@ -68,6 +68,7 @@ class Grille(
         return liste
     }
 
+    // Si le joueur a perdu
     fun isGameOver() : Boolean{
         for (i in 0 until width) {
            if (cases[0][i] != null){
