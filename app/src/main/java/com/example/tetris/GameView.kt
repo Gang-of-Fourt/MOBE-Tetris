@@ -21,6 +21,8 @@ class GameView(context: Context) : SurfaceHolder.Callback , SurfaceView(context)
     var currentForm : Figure = RandomFigure.chooseFigure()
 
 
+
+
     init {
         holder.addCallback(this)
         thread = GameThread(holder, this)
@@ -39,18 +41,29 @@ class GameView(context: Context) : SurfaceHolder.Callback , SurfaceView(context)
 
     // Incremente le timer, plus le modulo est grand, plus le jeu sera lent
     fun update() {
-        timer = (timer + 1 ) % 15
+        // Si le joueur a son téléphone penché
+        if (valuesAccelerometer[2] >= 4){
+            timer = (timer + 1 ) % 15
+        } else {
+            timer = (timer + 1 ) % 40
+        }
+
     }
 
 
     override fun draw(canvas: Canvas?) {
         super.draw(canvas)
+        val SIZE  = 0F
+        if(canvas != null){
+            val SIZE = (height / grille.height - (height / grille.height * 1/5)).toFloat()
+        }
 
         // Tans que le joueur n'a pas perdu la partie
         if (canvas != null && !grille.isGameOver()) {
+
             canvas.drawColor(Color.WHITE)
-            currentForm.draw(canvas)
-            grille.draw(canvas)
+            currentForm.draw(canvas, SIZE)
+            grille.draw(canvas, SIZE)
 
             // A chaque fois que le timer est reset, le jeu vancera d'une frame
             // cad qu'il calculera si la piece va doite ou gauche, si elle touche le sol etc..
@@ -69,7 +82,7 @@ class GameView(context: Context) : SurfaceHolder.Callback , SurfaceView(context)
             }
         } else {
             // Dessine uniquement les fgigures qui composent la grille si le joueur a perdu sa partie
-            grille.draw(canvas!!)
+            grille.draw(canvas!!, SIZE)
         }
     }
 

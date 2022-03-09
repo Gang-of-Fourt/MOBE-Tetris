@@ -23,6 +23,8 @@ open class Figure(
     lateinit var rotate2: Array<Array<Bloc?>>
     lateinit var rotate3: Array<Array<Bloc?>>
 
+    val SIZE = 80F
+
     private fun doCopy() : Figure {
         val saveFigure = Figure(nom, coordonnees, color, hitBox, nbRotate, currentRotate)
         saveFigure.blocs = blocs.copyOf()
@@ -135,7 +137,8 @@ open class Figure(
     }
 
     // Dessine la figure
-    fun draw(canvas: Canvas?){
+    fun draw(canvas: Canvas?, SIZE : Float){
+
         val paint = Paint()
         if (canvas != null) {
             for (i in 0 until hitBox){
@@ -144,10 +147,10 @@ open class Figure(
                         blocs[i][j]!!.color = color
                         paint.color = blocs[i][j]!!.color
                         canvas.drawRect(
-                            0F + (j*100) + (coordonnees.posx*100),
-                            0F +(i*100) + (coordonnees.posy*100),
-                            100F +(j*100) + (coordonnees.posx*100),
-                            100F + (i*100)  + (coordonnees.posy*100),
+                             j*SIZE + (coordonnees.posx*SIZE),
+                            i*SIZE + (coordonnees.posy*SIZE),
+                            SIZE +(j*SIZE) + (coordonnees.posx*SIZE),
+                            SIZE + (i*SIZE)  + (coordonnees.posy*SIZE),
                             paint);
                     }
                 }

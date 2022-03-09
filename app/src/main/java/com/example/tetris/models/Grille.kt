@@ -11,6 +11,7 @@ class Grille(
 ) {
     var cases: MutableList<MutableList<Bloc?>> = MutableList(height) {MutableList(width+2) {null} }
 
+
     // Met la figure donnée en paramètre dans la grille
     fun update(figure : Figure){
         for (i in 0 until figure.hitBox) {
@@ -79,15 +80,13 @@ class Grille(
     }
 
     // Dessine le contenue de la grille
-    fun draw(canvas : Canvas) {
+    fun draw(canvas : Canvas, SIZE : Float) {
         for (i in 0 until height){
             for (j in 0 until width){
                 if(cases[i][j] != null){
                     val paint = Paint()
                     paint.color = cases[i][j]!!.color
-                    canvas.drawRect(0F + (j*100), 0F +(i*100), 100F +(j*100), 100F + (i*100), paint);
-//                    canvas.drawText("test",0, 1, 50F, 50F, paint)
-
+                    canvas.drawRect(j*SIZE, i*SIZE, SIZE +(j*SIZE), SIZE + (i*SIZE), paint);
                 }
             }
         }
