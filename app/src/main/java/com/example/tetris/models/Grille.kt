@@ -54,7 +54,7 @@ class Grille(
     // Vérifie si une  ou plusieurs lignes sont remplies et retourne leurs coordonée dans une liste
     fun isLineFull() : List<Int>{
         var blocInLine : Int
-        val liste = mutableListOf<Int>()
+        val listeTab = mutableListOf<Int>()
         for (i in 0 until height){
             blocInLine = 0
             for (j in 0 until width){
@@ -63,10 +63,10 @@ class Grille(
                 }
             }
             if (blocInLine == width){
-                liste.add(i)
+                listeTab.add(i)
             }
         }
-        return liste
+        return listeTab
     }
 
     // Si le joueur a perdu

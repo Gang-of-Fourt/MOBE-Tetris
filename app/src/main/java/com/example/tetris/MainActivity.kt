@@ -1,13 +1,13 @@
 package com.example.tetris
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 
@@ -15,15 +15,19 @@ import androidx.appcompat.app.AppCompatActivity
 class MainActivity : AppCompatActivity(), SensorEventListener {
     @RequiresApi(Build.VERSION_CODES.R)
     var valuesAcceleromoetre : MutableList<Float> = MutableList(3) {0F}
+    var valuesGyroscope : MutableList<Float> = MutableList(3) {0F}
     lateinit var accelerometre : Sensor
+    lateinit var gyroscope : Sensor
     lateinit var sensorManager : SensorManager
     lateinit var gameView : GameView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val hander = Handler()
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         accelerometre = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
-        gameView = GameView(this)
+        gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
+        gameView = GameView(this, hander)
         setContentView(gameView)
 
     }
@@ -36,6 +40,9 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
                 // On donne les nouvelles valeures de l'acceleromatre au gameView
                 gameView.valuesAccelerometer = valuesAcceleromoetre
             }
+            Sensor.TYPE_GYROSCOPE -> {
+                gameView.valuesGyroscopeZ = event.values[2]
+            }
         }
     }
 
@@ -46,6 +53,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
     override fun onResume() {
         super.onResume()
         sensorManager.registerListener(this, accelerometre, SensorManager.SENSOR_DELAY_NORMAL)
+        sensorManager.registerListener(this, gyroscope, SensorManager.SENSOR_DELAY_NORMAL)
     }
 
 
