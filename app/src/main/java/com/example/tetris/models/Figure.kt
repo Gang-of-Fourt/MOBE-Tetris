@@ -137,20 +137,22 @@ open class Figure(
     }
 
     // Dessine la figure
-    fun draw(canvas: Canvas?, SIZE : Float){
+    fun draw(canvas: Canvas?, SIZE : Float, CONST : Float){
 
         val paint = Paint()
+
         if (canvas != null) {
-            for (i in 0 until hitBox){
+
+                for (i in 0 until hitBox){
                 for (j in 0 until hitBox){
                     if( blocs[i][j] != null){
                         blocs[i][j]!!.color = color
                         paint.color = blocs[i][j]!!.color
                         canvas.drawRect(
                              j*SIZE + (coordonnees.posx*SIZE),
-                            i*SIZE + (coordonnees.posy*SIZE),
+                            CONST+ i*SIZE + (coordonnees.posy*SIZE),
                             SIZE +(j*SIZE) + (coordonnees.posx*SIZE),
-                            SIZE + (i*SIZE)  + (coordonnees.posy*SIZE),
+                            CONST +SIZE + (i*SIZE)  + (coordonnees.posy*SIZE),
                             paint);
                     }
                 }

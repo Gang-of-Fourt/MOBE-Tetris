@@ -80,13 +80,17 @@ class Grille(
     }
 
     // Dessine le contenue de la grille
-    fun draw(canvas : Canvas, SIZE : Float) {
-        for (i in 0 until height){
-            for (j in 0 until width){
-                if(cases[i][j] != null){
-                    val paint = Paint()
+    fun draw(canvas : Canvas, SIZE : Float, CONST : Float) {
+        for (i in -1 until height){
+            for (j in 0 until width + 1){
+                val paint = Paint()
+                if (i < 0 || j >= width ){
+                    paint.color = Color.BLACK
+                    canvas.drawRect(j*SIZE, CONST + i*SIZE, SIZE +(j*SIZE), CONST + SIZE + (i*SIZE), paint);
+                }
+                else if(cases[i][j] != null){
                     paint.color = cases[i][j]!!.color
-                    canvas.drawRect(j*SIZE, i*SIZE, SIZE +(j*SIZE), SIZE + (i*SIZE), paint);
+                    canvas.drawRect( j*SIZE, CONST + i*SIZE, SIZE+(j*SIZE), CONST + SIZE + (i*SIZE), paint);
                 }
             }
         }

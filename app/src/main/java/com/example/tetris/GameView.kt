@@ -16,7 +16,7 @@ class GameView(context: Context) : SurfaceHolder.Callback , SurfaceView(context)
 
     private var timer : Int = 0
     private var thread : GameThread
-    var grille = Grille(20,11)
+    var grille = Grille(20,12)
     var valuesAccelerometer : MutableList<Float> = MutableList(3) {0F}
     var currentForm : Figure = RandomFigure.chooseFigure()
 
@@ -53,17 +53,14 @@ class GameView(context: Context) : SurfaceHolder.Callback , SurfaceView(context)
 
     override fun draw(canvas: Canvas?) {
         super.draw(canvas)
-        val SIZE  = 0F
-        if(canvas != null){
-            val SIZE = (height / grille.height - (height / grille.height * 1/5)).toFloat()
-        }
+        val SIZE  = (height / grille.height - (height / grille.height * 1/5)).toFloat()
+        val CONST = height - SIZE* grille.height
 
         // Tans que le joueur n'a pas perdu la partie
         if (canvas != null && !grille.isGameOver()) {
-
             canvas.drawColor(Color.WHITE)
-            currentForm.draw(canvas, SIZE)
-            grille.draw(canvas, SIZE)
+            currentForm.draw(canvas, SIZE, CONST)
+            grille.draw(canvas, SIZE, CONST)
 
             // A chaque fois que le timer est reset, le jeu vancera d'une frame
             // cad qu'il calculera si la piece va doite ou gauche, si elle touche le sol etc..
@@ -82,7 +79,7 @@ class GameView(context: Context) : SurfaceHolder.Callback , SurfaceView(context)
             }
         } else {
             // Dessine uniquement les fgigures qui composent la grille si le joueur a perdu sa partie
-            grille.draw(canvas!!, SIZE)
+            grille.draw(canvas!!, SIZE, CONST)
         }
     }
 
