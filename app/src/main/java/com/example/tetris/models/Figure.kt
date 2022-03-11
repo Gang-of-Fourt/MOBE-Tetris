@@ -24,7 +24,7 @@ open class Figure(
     lateinit var rotate3: Array<Array<Bloc?>>
 
 
-    private fun doCopy() : Figure {
+    fun doCopy() : Figure {
         val saveFigure = Figure(nom, coordonnees, color, hitBox, nbRotate, currentRotate)
         saveFigure.blocs = blocs.copyOf()
         return saveFigure
@@ -35,20 +35,13 @@ open class Figure(
         for (i in 0 until hitBox) {
             for (j in 0 until hitBox) {
                 if(blocs[i][j] != null){
-                    // Si un bloc est à droite de la grille
-                    if (coordonnees.posx + j >= grille.width){
-                        return true
-                    }
-                    // Si un bloc est à gauche de la grille
-                    else if(coordonnees.posx + j < 0){
-                        return true
-                    }
-                    // Si un bloc est sous la grille
-                    else if (coordonnees.posy + i >= grille.height){
-                        return true
-                    }
-                    // Si un bloc est dans un autre bloc
-                    else if (grille.cases[coordonnees.posy + i][coordonnees.posx + j] != null) {
+
+                    if (coordonnees.posx + j >= grille.width || // Si un bloc est à droite de la grille
+                        coordonnees.posx + j < 0 || // Si un bloc est à gauche de la grille
+                        coordonnees.posy + i >= grille.height || // Si un bloc est sous la grille
+                        grille.cases[coordonnees.posy + i][coordonnees.posx + j] != null // Si un bloc est dans un autre bloc
+                        )
+                    {
                         return true
                     }
                 }
@@ -68,7 +61,7 @@ open class Figure(
             currentRotate = (currentRotate+1)%nbRotate
         }
         else {
-            currentRotate = (currentRotate-1)%nbRotate
+            currentRotate = if (currentRotate-1 == -1)  3%nbRotate else  (currentRotate-1)
         }
 
         //Fait la rotation
@@ -138,11 +131,30 @@ open class Figure(
         }
     }
 
+    fun drawWhenNextFigure(canvas: Canvas?, SIZE : Float){
+        val paint = Paint()
+        if (canvas != null) {
+            for (i in 0 until hitBox){
+                for (j in 0 until hitBox){
+                    if( blocs[i][j] != null){
+                        blocs[i][j]!!.color = color
+                        paint.color = blocs[i][j]!!.color
+                        canvas.drawRect(
+                            j*SIZE,
+                            i*SIZE,
+                            j*SIZE + SIZE,
+                            i*SIZE + SIZE,
+                            paint);
+                    }
+                }
+            }
+        }
+    }
+
     // Dessine la figure
     fun draw(canvas: Canvas?, SIZE : Float, CONST : Float){
         val paint = Paint()
         if (canvas != null) {
-
                 for (i in 0 until hitBox){
                 for (j in 0 until hitBox){
                     if( blocs[i][j] != null){

@@ -11,15 +11,19 @@ import android.os.Handler
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.example.tetris.models.EnumSens
+import kotlin.math.abs
 
 
 class MainActivity : AppCompatActivity(), SensorEventListener {
     @RequiresApi(Build.VERSION_CODES.R)
     lateinit var accelerometre : Sensor
     lateinit var gyroscope : Sensor
+    lateinit var light: Sensor
 
-    lateinit var sensorManager : SensorManager
+    private lateinit var sensorManager : SensorManager
     lateinit var gameView : GameView
+
+    var timeSave = 0L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,6 +31,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         accelerometre = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
         gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
+        light = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT)
         gameView = GameView(this)
         setContentView(gameView)
 
@@ -38,11 +43,20 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
                 gameView.valuesAccelerometerY = event.values[1]
             }
             Sensor.TYPE_GYROSCOPE -> {
-                if(event.values[2]>2) {
-                    gameView.currentForm.rotate(EnumSens.SENS_HORAIRE, gameView.grille)
-                } else if (event.values[2]<-2){
-                    gameView.currentForm.rotate(EnumSens.SENS_HORAIRE, gameView.grille)
+                val timeCurrent = System.currentTimeMillis()
+                if (abs(timeCurrent - timeSave) > 200) {
+                    if (event.values[2] < -2) {
+                        gameView.currentForm.rotate(EnumSens.SENS_ANTIHORAIRE, gameView.grille)
+                        timeSave = System.currentTimeMillis()
+                    }
+                    if (event.values[2] > 2) {
+                        gameView.currentForm.rotate(EnumSens.SENS_HORAIRE, gameView.grille)
+                        timeSave = System.currentTimeMillis()
+                    }
                 }
+            }
+            Sensor.TYPE_LIGHT -> {
+                gameView.lightSensor = event.values[0]
             }
         }
     }
@@ -55,6 +69,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         super.onResume()
         sensorManager.registerListener(this, accelerometre, SensorManager.SENSOR_DELAY_NORMAL)
         sensorManager.registerListener(this, gyroscope, SensorManager.SENSOR_DELAY_NORMAL)
+        sensorManager.registerListener(this, light, SensorManager.SENSOR_DELAY_NORMAL)
     }
 
 

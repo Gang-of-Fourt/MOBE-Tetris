@@ -9,27 +9,27 @@ class FormeL2(color : Int, currentRotate : Int) : Figure("L", Coordonnees(4,0), 
 
     init {
         rotate0 = arrayOf (
-            arrayOf(null, Bloc(color), null),
-            arrayOf(null, Bloc(color), null),
-            arrayOf(Bloc(color), Bloc(color), null)
+            arrayOf(null, null, Bloc(color)),
+            arrayOf(null, null, Bloc(color)),
+            arrayOf(null, Bloc(color), Bloc(color))
         )
 
         rotate1 = arrayOf(
+            arrayOf(null, null, null),
             arrayOf(Bloc(color), null, null),
             arrayOf(Bloc(color), Bloc(color), Bloc(color)),
-            arrayOf(null, null, null)
         )
 
         rotate2 = arrayOf(
-            arrayOf(null, Bloc(color), Bloc(color)),
-            arrayOf(null, Bloc(color), null),
-            arrayOf(null, Bloc(color), null)
+            arrayOf(Bloc(color), Bloc(color), null),
+            arrayOf(Bloc(color), null, null),
+            arrayOf(Bloc(color), null, null)
         )
 
         rotate3 = arrayOf(
-            arrayOf(null, null, null),
             arrayOf(Bloc(color), Bloc(color), Bloc(color)),
-            arrayOf(null, null, Bloc(color))
+            arrayOf(null, null, Bloc(color)),
+            arrayOf(null, null, null),
         )
 
         blocs = initFigure()

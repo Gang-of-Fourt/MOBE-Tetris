@@ -23,9 +23,13 @@ class GameView(context: Context) : SurfaceHolder.Callback , SurfaceView(context)
 
     private var gameDrawThread = GameDrawThread(holder, this)
     private var gameFallThread = GameFallThread(holder, this)
-    var grille = Grille(20,12)
+    var grille = Grille(20,13)
     var valuesAccelerometerY = 0F
-    var currentForm : Figure = RandomFigure.chooseFigure()
+    var lightSensor = 0F
+    var currentForm = RandomFigure.chooseFigure()
+    var nextFigure = RandomFigure.chooseFigure()
+    var saveFigure : Figure? = null
+
     private var touch = mutableListOf(0F, 0F)
     private var unTouch = mutableListOf(0F, 0F)
 
@@ -77,11 +81,10 @@ class GameView(context: Context) : SurfaceHolder.Callback , SurfaceView(context)
         if (canvas != null && !grille.isGameOver()) {
             canvas.drawColor(Color.WHITE)
             currentForm.draw(canvas, SIZE, CONST)
+            nextFigure.drawWhenNextFigure(canvas, SIZE)
             grille.draw(canvas, SIZE, CONST)
 
             // Si la figure courante n'a pas touché le sol
-
-
         } else {
             // Dessine uniquement les fgigures qui composent la grille si le joueur a perdu sa partie
             grille.draw(canvas!!, SIZE, CONST)
@@ -89,14 +92,17 @@ class GameView(context: Context) : SurfaceHolder.Callback , SurfaceView(context)
     }
 
     fun fall() {
-        if (!currentForm.hasItGround(grille)){
-            currentForm.updateCoordY()
-        } else { // Si la figure courante a touché le sol
-            grille.update(currentForm) // Ajoute la figure courante à la grille
-            currentForm = RandomFigure.chooseFigure() // choisi une nouvelle figure
-            val lineFull = grille.isLineFull() // Vérifie si une ligne de la grille est remplie
-            if (lineFull.isNotEmpty()){
-                grille.deletLines(lineFull) // supprime les lignes remplies si eil y en a
+        if (!grille.isGameOver()) {
+            if (!currentForm.hasItGround(grille)) {
+                currentForm.updateCoordY()
+            } else { // Si la figure courante a touché le sol
+                grille.update(currentForm) // Ajoute la figure courante à la grille
+                currentForm = nextFigure // choisi une nouvelle figure
+                nextFigure = RandomFigure.chooseFigure()
+                val lineFull = grille.isLineFull() // Vérifie si une ligne de la grille est remplie
+                if (lineFull.isNotEmpty()) {
+                    grille.deletLines(lineFull) // supprime les lignes remplies si eil y en a
+                }
             }
         }
     }

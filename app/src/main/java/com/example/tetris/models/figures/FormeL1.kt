@@ -15,15 +15,15 @@ class FormeL1(color : Int, currentRotate : Int) : Figure("L", Coordonnees(4,0), 
         )
 
         rotate1 = arrayOf(
-            arrayOf(null, null, null),
             arrayOf(Bloc(color), Bloc(color), Bloc(color)),
-            arrayOf(Bloc(color), null, null)
+            arrayOf(Bloc(color), null, null),
+            arrayOf(null, null, null),
         )
 
         rotate2 = arrayOf(
-            arrayOf(Bloc(color), Bloc(color), null),
-            arrayOf(null, Bloc(color), null),
-            arrayOf(null, Bloc(color), null)
+            arrayOf(null, Bloc(color), Bloc(color)),
+            arrayOf(null, null, Bloc(color)),
+            arrayOf(null, null, Bloc(color))
         )
 
         rotate3 = arrayOf(
