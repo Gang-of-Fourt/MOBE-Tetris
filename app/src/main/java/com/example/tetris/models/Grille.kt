@@ -11,7 +11,6 @@ class Grille(
 ) {
     var cases: MutableList<MutableList<Bloc?>> = MutableList(height) {MutableList(width+2) {null} }
 
-
     // Met la figure donnée en paramètre dans la grille
     fun update(figure : Figure){
         for (i in 0 until figure.hitBox) {
@@ -49,7 +48,6 @@ class Grille(
             }
         }
     }
-
 
     // Vérifie si une  ou plusieurs lignes sont remplies et retourne leurs coordonée dans une liste
     fun isLineFull() : List<Int>{

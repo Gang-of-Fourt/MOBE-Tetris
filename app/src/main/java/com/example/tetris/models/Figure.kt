@@ -23,7 +23,6 @@ open class Figure(
     lateinit var rotate2: Array<Array<Bloc?>>
     lateinit var rotate3: Array<Array<Bloc?>>
 
-    val SIZE = 80F
 
     private fun doCopy() : Figure {
         val saveFigure = Figure(nom, coordonnees, color, hitBox, nbRotate, currentRotate)
@@ -124,13 +123,16 @@ open class Figure(
 
     // Modifie les coordonée de la figure et ajoutant de 1 les coordonées y et en prenant en compte les
     // valeurs de l'acceléromètre
-    fun updateCoord(valuesAcceleromoetre : MutableList<Float>, grille : Grille){
+    fun updateCoordY(){
         coordonnees.posy += 1
-        if (valuesAcceleromoetre[0] > 0.5 ){
+    }
+
+    fun updateCoordX(grille : Grille, sens : EnumsRL){
+        if (sens == EnumsRL.LEFT ){
             if(!hasLeftObstacle(grille))
                 coordonnees.posx--
         }
-        if (valuesAcceleromoetre[0] < -0.5 ){
+        if (sens == EnumsRL.RIGHT){
             if(!hasRightObstacle(grille))
                 coordonnees.posx++
         }
@@ -138,9 +140,7 @@ open class Figure(
 
     // Dessine la figure
     fun draw(canvas: Canvas?, SIZE : Float, CONST : Float){
-
         val paint = Paint()
-
         if (canvas != null) {
 
                 for (i in 0 until hitBox){

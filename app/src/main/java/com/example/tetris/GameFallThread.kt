@@ -9,7 +9,7 @@ class GameFallThread (var surfaceHolder : SurfaceHolder, var gameView : GameView
 
     private var running : Boolean = false
 
-    fun getDuration() =  1500F/ gameView.valuesAccelerometer[1].coerceAtLeast(1F)
+    fun getDuration() =  1500F/ gameView.valuesAccelerometerY.coerceAtLeast(1F)
 
     fun setRunning(isRunning: Boolean) {
         running = isRunning

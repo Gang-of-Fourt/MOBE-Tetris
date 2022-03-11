@@ -3,50 +3,70 @@ package com.example.tetris
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
+import android.view.View
 import com.example.tetris.models.EnumSens
+import com.example.tetris.models.EnumsRL
 import com.example.tetris.models.Figure
 import com.example.tetris.models.Grille
 import com.example.tetris.models.figures.*
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 
-class GameView(context: Context, handler: android.os.Handler) : SurfaceHolder.Callback , SurfaceView(context){
+class GameView(context: Context) : SurfaceHolder.Callback , SurfaceView(context){
 
-    private var gameDrawThread : GameDrawThread
-    private var gameFallThread : GameFallThread
+    private var gameDrawThread = GameDrawThread(holder, this)
+    private var gameFallThread = GameFallThread(holder, this)
     var grille = Grille(20,12)
-    var valuesAccelerometer : MutableList<Float> = MutableList(3) {0F}
-    var valuesGyroscopeZ : Float = 0F
+    var valuesAccelerometerY = 0F
     var currentForm : Figure = RandomFigure.chooseFigure()
+    private var touch = mutableListOf(0F, 0F)
+    private var unTouch = mutableListOf(0F, 0F)
 
     init {
         holder.addCallback(this)
-        gameDrawThread = GameDrawThread(holder, this)
-        gameFallThread = GameFallThread(holder, this)
     }
 
     //Si l'ecran est touché
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        when (event.action) {
-            // Appelle la fonciton de rotation si celle ci n'a pas touchée le sol
-            MotionEvent.ACTION_DOWN -> if (!currentForm.hasItGround(grille)) currentForm.rotate(EnumSens.SENS_HORAIRE, grille)
+        when (event?.action) {
+            MotionEvent.ACTION_DOWN -> {
+                touch[0] = event.x
+                touch[1] = event.y
+                println(event.y)
+            }
+            MotionEvent.ACTION_UP -> {
+                unTouch[0] = event.x
+                unTouch[1] = event.y
+                if(isSwip()){
+                    swip()
+                }
+            }
         }
         return true
     }
 
+    private fun isSwip() : Boolean{
+        val distance = sqrt((unTouch[0] - touch[0]).pow(2) + (unTouch[1] - touch[1]).pow(2))
+        return distance > 150
+    }
+
+    fun swip(){
+        if(touch[0] < unTouch[0]){
+         currentForm.updateCoordX(grille, EnumsRL.RIGHT)
+        } else {
+            currentForm.updateCoordX(grille, EnumsRL.LEFT)
+        }
+    }
+
     override fun surfaceChanged(surfaceHolder: SurfaceHolder, i: Int, i1: Int, i2: Int) {}
 
-    // Incremente le timer, plus le modulo est grand, plus le jeu sera lent
-//    fun update() {
-//        // Si le joueur a son téléphone penché
-//        if (valuesAccelerometer[2] >= 4){
-//            timer = (timer + 1 ) % 15
-//        } else {
-//            timer = (timer + 1 ) % 40
-//        }
-//    }
 
     override fun draw(canvas: Canvas?) {
         super.draw(canvas)
@@ -70,7 +90,7 @@ class GameView(context: Context, handler: android.os.Handler) : SurfaceHolder.Ca
 
     fun fall() {
         if (!currentForm.hasItGround(grille)){
-            currentForm.updateCoord(valuesAccelerometer, grille)
+            currentForm.updateCoordY()
         } else { // Si la figure courante a touché le sol
             grille.update(currentForm) // Ajoute la figure courante à la grille
             currentForm = RandomFigure.chooseFigure() // choisi une nouvelle figure
@@ -80,6 +100,7 @@ class GameView(context: Context, handler: android.os.Handler) : SurfaceHolder.Ca
             }
         }
     }
+
 
     override fun surfaceCreated(holder: SurfaceHolder) {
         gameDrawThread.setRunning(true)
@@ -102,5 +123,24 @@ class GameView(context: Context, handler: android.os.Handler) : SurfaceHolder.Ca
             retry = false
         }
     }
+
+//    override fun onTouch(v: View?, event: MotionEvent?): Boolean {
+//        when (event?.action) {
+//            MotionEvent.ACTION_UP -> {
+//                touch[0] = event.x
+//                touch[1] = event.y
+//                println(event.x)
+//                println(event.y)
+//            }
+//            MotionEvent.ACTION_DOWN -> {
+//                unTouch[0] = event.x
+//                unTouch[1] = event.y
+//            }
+//
+//        }
+//
+//        return v?.onTouchEvent(event) ?: true
+//    }
+
 
 }
