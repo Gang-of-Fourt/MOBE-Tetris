@@ -3,6 +3,8 @@ package com.example.tetris.models
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.os.Build
+import androidx.annotation.RequiresApi
 
 class Grille(
     var height : Int,
@@ -77,21 +79,65 @@ class Grille(
         return false
     }
 
+    //Dessine une case du fond de la grille
+    private fun drawBackground(canvas : Canvas, SIZE : Float, CONSTX : Float, CONSTY : Float, i : Int, j : Int){
+        val paint = Paint()
+        paint.color = Color.rgb(30,30,30)
+        canvas.drawRect(CONSTY + j*SIZE, CONSTX + i*SIZE, CONSTY + SIZE +(j*SIZE), CONSTX + SIZE + (i*SIZE), paint);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            paint.color = Color.BLACK
+            canvas.drawRoundRect(CONSTY + j*SIZE, CONSTX + i*SIZE, CONSTY + SIZE +(j*SIZE), CONSTX + SIZE + (i*SIZE),20F, 20F, paint)
+            paint.color = Color.rgb(20,20,20)
+            canvas.drawRoundRect(CONSTY + j*SIZE + SIZE*1/4, CONSTX + i*SIZE + SIZE*1/4, CONSTY + SIZE +(j*SIZE) - SIZE*1/4, CONSTX + SIZE + (i*SIZE) - SIZE*1/4,10F, 10F, paint);
+        };
+
+    }
+
     // Dessine le contenue de la grille
-    fun draw(canvas : Canvas, SIZE : Float, CONST : Float) {
+    fun draw(canvas : Canvas, SIZE : Float, CONSTX : Float, CONSTY : Float) {
         for (i in -1 until height){
-            for (j in 0 until width + 1){
+            for (j in -1 until width + 1){
                 val paint = Paint()
-                if (i < 0 || j >= width ){
+                // Dessine les bordures
+                if (i < 0 || j >= width || j < 0 ){
                     paint.color = Color.BLACK
-                    canvas.drawRect(j*SIZE, CONST + i*SIZE, SIZE +(j*SIZE), CONST + SIZE + (i*SIZE), paint);
-                }
-                else if(cases[i][j] != null){
-                    paint.color = cases[i][j]!!.color
-                    canvas.drawRect( j*SIZE, CONST + i*SIZE, SIZE+(j*SIZE), CONST + SIZE + (i*SIZE), paint);
+                    canvas.drawRect(CONSTY + j*SIZE, CONSTX + i*SIZE, CONSTY + SIZE +(j*SIZE), CONSTX + SIZE + (i*SIZE), paint);
+                } else {
+                    // Dessine le contenue de la grille
+                     if(cases[i][j] != null){
+                        paint.color = cases[i][j]!!.color
+                        canvas.drawRect( CONSTY + j*SIZE, CONSTX + i*SIZE, CONSTY + SIZE+(j*SIZE), CONSTX + SIZE + (i*SIZE), paint);
+                         paint.color = Color.argb(30,255,255, 255)
+                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                             canvas.drawRoundRect(
+                                 CONSTY + j*SIZE + SIZE*1/8,
+                                 CONSTX + i*SIZE + SIZE*1/8,
+                                 CONSTY + SIZE+(j*SIZE) - SIZE*1/8,
+                                 CONSTX + SIZE + (i*SIZE) - SIZE*1/8,
+                                 10F,
+                                 10F,
+                                 paint)
+                         };
+                     }
+                     // Dessine le fond de la grille
+                     else {
+                         drawBackground(canvas, SIZE, CONSTX, CONSTY, i, j)
+                     }
                 }
             }
         }
     }
-
 }
+
+//if (cases[i][j] != null) {
+//    paint.color = cases[i][j]!!.color
+//} else {
+//    paint.color = Color.LTGRAY
+//}
+//canvas.drawRect(
+//CONSTY + j * SIZE,
+//CONSTX + i * SIZE,
+//CONSTY + SIZE + (j * SIZE),
+//CONSTX + SIZE + (i * SIZE),
+//paint
+//);

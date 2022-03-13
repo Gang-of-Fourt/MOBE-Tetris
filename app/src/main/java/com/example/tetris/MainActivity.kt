@@ -1,6 +1,7 @@
 package com.example.tetris
 
 import android.content.Context
+import android.content.pm.ActivityInfo
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -27,12 +28,13 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        // TODO Tester si les capteurs sont présents sur le tel
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         accelerometre = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
         gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
         light = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT)
         gameView = GameView(this)
+        this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
         setContentView(gameView)
 
     }
@@ -46,11 +48,11 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
                 val timeCurrent = System.currentTimeMillis()
                 if (abs(timeCurrent - timeSave) > 200) {
                     if (event.values[2] < -2) {
-                        gameView.currentForm.rotate(EnumSens.SENS_ANTIHORAIRE, gameView.grille)
+                        gameView.currentForm.rotate(EnumSens.SENS_HORAIRE, gameView.grille)
                         timeSave = System.currentTimeMillis()
                     }
                     if (event.values[2] > 2) {
-                        gameView.currentForm.rotate(EnumSens.SENS_HORAIRE, gameView.grille)
+                        gameView.currentForm.rotate(EnumSens.SENS_ANTIHORAIRE, gameView.grille)
                         timeSave = System.currentTimeMillis()
                     }
                 }

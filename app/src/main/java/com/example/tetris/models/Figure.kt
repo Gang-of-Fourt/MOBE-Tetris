@@ -3,6 +3,7 @@ package com.example.tetris.models
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.os.Build
 import android.util.DisplayMetrics
 
 open class Figure(
@@ -24,6 +25,7 @@ open class Figure(
     lateinit var rotate3: Array<Array<Bloc?>>
 
 
+    // Fait une copie de la figure et la retourne
     fun doCopy() : Figure {
         val saveFigure = Figure(nom, coordonnees, color, hitBox, nbRotate, currentRotate)
         saveFigure.blocs = blocs.copyOf()
@@ -114,12 +116,12 @@ open class Figure(
     }
 
 
-    // Modifie les coordonée de la figure et ajoutant de 1 les coordonées y et en prenant en compte les
-    // valeurs de l'acceléromètre
+    // Fait desendre la figure
     fun updateCoordY(){
         coordonnees.posy += 1
     }
 
+    // Décale la figure à droite ou à gauche
     fun updateCoordX(grille : Grille, sens : EnumsRL){
         if (sens == EnumsRL.LEFT ){
             if(!hasLeftObstacle(grille))
@@ -131,6 +133,7 @@ open class Figure(
         }
     }
 
+    // Dessine la figure en haut à gauche (pour faire comprendre aux joueurs que ce sera la prochaine qui apparaitra)
     fun drawWhenNextFigure(canvas: Canvas?, SIZE : Float){
         val paint = Paint()
         if (canvas != null) {
@@ -144,7 +147,18 @@ open class Figure(
                             i*SIZE,
                             j*SIZE + SIZE,
                             i*SIZE + SIZE,
-                            paint);
+                            paint)
+                        paint.color = Color.argb(30,255,255, 255)
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            canvas.drawRoundRect(
+                                j*SIZE + SIZE*1/8,
+                                i*SIZE + SIZE*1/8,
+                                j*SIZE + SIZE - SIZE*1/8,
+                                i*SIZE + SIZE - SIZE*1/8,
+                                10F,
+                                10F,
+                                paint)
+                        };
                     }
                 }
             }
@@ -152,7 +166,7 @@ open class Figure(
     }
 
     // Dessine la figure
-    fun draw(canvas: Canvas?, SIZE : Float, CONST : Float){
+    fun draw(canvas: Canvas?, SIZE : Float, CONSTX : Float, CONSTY : Float){
         val paint = Paint()
         if (canvas != null) {
                 for (i in 0 until hitBox){
@@ -161,11 +175,22 @@ open class Figure(
                         blocs[i][j]!!.color = color
                         paint.color = blocs[i][j]!!.color
                         canvas.drawRect(
-                             j*SIZE + (coordonnees.posx*SIZE),
-                            CONST+ i*SIZE + (coordonnees.posy*SIZE),
-                            SIZE +(j*SIZE) + (coordonnees.posx*SIZE),
-                            CONST +SIZE + (i*SIZE)  + (coordonnees.posy*SIZE),
-                            paint);
+                            CONSTY + j*SIZE + (coordonnees.posx*SIZE),
+                            CONSTX+ i*SIZE + (coordonnees.posy*SIZE),
+                            CONSTY + SIZE +(j*SIZE) + (coordonnees.posx*SIZE),
+                            CONSTX +SIZE + (i*SIZE)  + (coordonnees.posy*SIZE),
+                            paint)
+                        paint.color = Color.argb(30,255,255, 255)
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            canvas.drawRoundRect(
+                                CONSTY + j*SIZE + SIZE*1/8 + (coordonnees.posx*SIZE),
+                                CONSTX + i*SIZE + SIZE*1/8 + (coordonnees.posy*SIZE),
+                                CONSTY + SIZE +(j*SIZE) - SIZE*1/8 + (coordonnees.posx*SIZE),
+                                CONSTX + SIZE + (i*SIZE) - SIZE*1/8+ (coordonnees.posy*SIZE),
+                                10F,
+                                10F,
+                                paint)
+                        };
                     }
                 }
             }

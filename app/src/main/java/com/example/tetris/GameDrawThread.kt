@@ -4,6 +4,7 @@ import android.view.SurfaceHolder
 import android.graphics.Canvas
 import kotlin.random.Random
 
+// S'occupe de dessiner le jeu sur le téléphone
 class GameDrawThread (var surfaceHolder : SurfaceHolder, var gameView : GameView) : Thread() {
 
     private var running : Boolean = false
