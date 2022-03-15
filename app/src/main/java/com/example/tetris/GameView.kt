@@ -20,6 +20,7 @@ class GameView(context: Context) : SurfaceHolder.Callback , SurfaceView(context)
 
     private var gameDrawThread = GameDrawThread(holder, this)
     private var gameFallThread = GameFallThread(holder, this)
+    private var gameSaveFigureThread = GameSaveFigureThread(holder, this)
 
     var valuesAccelerometerY = 0F
     var lightSensor = 0F
@@ -28,13 +29,13 @@ class GameView(context: Context) : SurfaceHolder.Callback , SurfaceView(context)
     var grille = Grille(22,11)
 
     // La figure courrante
-    var currentForm = RandomFigure.chooseFigure()
+    var currentFigure= RandomFigure.chooseFigure()
 
     // La prochaine figure
-    var nextFigure = RandomFigure.chooseFigure()
+    var nextFigure = NextFigure(RandomFigure.chooseFigure())
 
     // La figure sauvgardée par le joueur
-    var saveFigure : Figure? = null
+    var saveFigure = SaveFigure(null)
 
     var highScore = HighScore()
 
@@ -76,9 +77,9 @@ class GameView(context: Context) : SurfaceHolder.Callback , SurfaceView(context)
     // Effectu le swip, donc décale la figure à gauche ou à droite
     fun swip(){
         if(touch[0] < unTouch[0]){
-         currentForm.updateCoordX(grille, EnumsRL.RIGHT)
+            currentFigure.updateCoordX(grille, EnumsRL.RIGHT)
         } else {
-            currentForm.updateCoordX(grille, EnumsRL.LEFT)
+            currentFigure.updateCoordX(grille, EnumsRL.LEFT)
         }
     }
 
@@ -88,6 +89,7 @@ class GameView(context: Context) : SurfaceHolder.Callback , SurfaceView(context)
     // Permet de dessiner le jeu (appelé par le thread "GameDrawThread")
     override fun draw(canvas: Canvas?) {
         super.draw(canvas)
+
         val SIZE  = ( (height / grille.height) * 3/4 ).toFloat()
         val CONSTY = (width - (SIZE * grille.width))/2
         val CONSTX = height - SIZE* grille.height
@@ -96,8 +98,9 @@ class GameView(context: Context) : SurfaceHolder.Callback , SurfaceView(context)
         if (canvas != null && !grille.isGameOver()) {
             canvas.drawColor(Color.WHITE)
             grille.draw(canvas, SIZE, CONSTX, CONSTY)
-            currentForm.draw(canvas, SIZE, CONSTX, CONSTY)
-            nextFigure.drawWhenNextFigure(canvas, SIZE)
+            currentFigure.draw(canvas, SIZE, CONSTX, CONSTY)
+            nextFigure.draw(canvas, SIZE)
+            saveFigure.draw(canvas, SIZE)
             highScore.draw(canvas)
 
             // Si la figure courante n'a pas touché le sol
@@ -107,15 +110,35 @@ class GameView(context: Context) : SurfaceHolder.Callback , SurfaceView(context)
         }
     }
 
+    // Vérifie s'il faut save la figure et la save si c'est la cas
+    fun save(){
+        println("light : $lightSensor")
+        if (!grille.isGameOver()) {
+            if (!currentFigure.hasItGround(grille)) {
+                currentFigure.changeColorLight(lightSensor)
+
+                // Si la figure est save
+                if(lightSensor<10 && !saveFigure.alreadySave){
+                    saveFigure.addFigure(currentFigure)
+                    currentFigure = nextFigure.figure
+                    nextFigure.figure = RandomFigure.chooseFigure()
+                }
+            }
+        }
+
+    }
+
     // Permet de faire fonctionner le jeu (appelé par le thread "GameFallThread")
     fun fall() {
         if (!grille.isGameOver()) {
-            if (!currentForm.hasItGround(grille)) {
-                currentForm.updateCoordY()
+            if (!currentFigure.hasItGround(grille)) {
+                currentFigure.updateCoordY()
             } else { // Si la figure courante a touché le sol
-                grille.update(currentForm) // Ajoute la figure courante à la grille
-                currentForm = nextFigure // choisi une nouvelle figure
-                nextFigure = RandomFigure.chooseFigure()
+
+                grille.update(currentFigure) // Ajoute la figure courante à la grille
+                currentFigure = nextFigure.figure // choisi une nouvelle figure
+                nextFigure.figure = RandomFigure.chooseFigure()
+                saveFigure.alreadySave = false
                 val lineFull = grille.isLineFull() // Vérifie si une ligne de la grille est remplie
                 if (lineFull.isNotEmpty()) {
                     grille.deletLines(lineFull) // supprime les lignes remplies si eil y en a
@@ -125,12 +148,22 @@ class GameView(context: Context) : SurfaceHolder.Callback , SurfaceView(context)
         }
     }
 
+    //Utilise la figure sauvgardé
+    fun useSaveFigure(){
+        if (saveFigure.figure != null){
+            currentFigure = saveFigure.figure!!
+            saveFigure.figure = null
+        }
+    }
+
 
     override fun surfaceCreated(holder: SurfaceHolder) {
         gameDrawThread.setRunning(true)
         gameDrawThread.start()
         gameFallThread.setRunning(true)
         gameFallThread.start()
+        gameSaveFigureThread.setRunning(true)
+        gameSaveFigureThread.start()
     }
 
     override fun surfaceDestroyed(holder: SurfaceHolder) {
@@ -141,6 +174,8 @@ class GameView(context: Context) : SurfaceHolder.Callback , SurfaceView(context)
                 gameDrawThread.join()
                 gameFallThread.setRunning(false)
                 gameFallThread.join()
+                gameSaveFigureThread.setRunning(false)
+                gameSaveFigureThread.join()
             } catch (e: InterruptedException) {
                 e.printStackTrace()
             }

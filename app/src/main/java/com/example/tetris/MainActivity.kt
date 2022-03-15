@@ -48,12 +48,15 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
                 val timeCurrent = System.currentTimeMillis()
                 if (abs(timeCurrent - timeSave) > 200) {
                     if (event.values[2] < -2) {
-                        gameView.currentForm.rotate(EnumSens.SENS_HORAIRE, gameView.grille)
+                        gameView.currentFigure.rotate(EnumSens.SENS_HORAIRE, gameView.grille)
                         timeSave = System.currentTimeMillis()
                     }
                     if (event.values[2] > 2) {
-                        gameView.currentForm.rotate(EnumSens.SENS_ANTIHORAIRE, gameView.grille)
+                        gameView.currentFigure.rotate(EnumSens.SENS_ANTIHORAIRE, gameView.grille)
                         timeSave = System.currentTimeMillis()
+                    }
+                    if(event.values[0] < -2){
+                        gameView.useSaveFigure()
                     }
                 }
             }

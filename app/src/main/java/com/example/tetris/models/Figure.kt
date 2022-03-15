@@ -4,7 +4,6 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.os.Build
-import android.util.DisplayMetrics
 
 open class Figure(
     var nom: String,
@@ -23,6 +22,8 @@ open class Figure(
     lateinit var rotate1: Array<Array<Bloc?>>
     lateinit var rotate2: Array<Array<Bloc?>>
     lateinit var rotate3: Array<Array<Bloc?>>
+
+    var colorBordure = Color.rgb( 255, 255, 255)
 
 
     // Fait une copie de la figure et la retourne
@@ -133,32 +134,33 @@ open class Figure(
         }
     }
 
-    // Dessine la figure en haut à gauche (pour faire comprendre aux joueurs que ce sera la prochaine qui apparaitra)
-    fun drawWhenNextFigure(canvas: Canvas?, SIZE : Float){
+    fun changeColorLight(lightSensor : Float){
+        val alpha = (255 - (lightSensor*18.47).toInt() + 50 )
+        println("light : $alpha")
+        colorBordure = Color.argb(alpha, 0, 0, 255)
+    }
+
+    fun resetCoord(){
+        coordonnees.posy = 0
+        coordonnees.posx = 5
+    }
+
+
+
+    private fun drawBordure(canvas: Canvas?, SIZE : Float, CONSTX : Float, CONSTY : Float){
         val paint = Paint()
+        paint.color = colorBordure
         if (canvas != null) {
             for (i in 0 until hitBox){
                 for (j in 0 until hitBox){
                     if( blocs[i][j] != null){
-                        blocs[i][j]!!.color = color
-                        paint.color = blocs[i][j]!!.color
                         canvas.drawRect(
-                            j*SIZE,
-                            i*SIZE,
-                            j*SIZE + SIZE,
-                            i*SIZE + SIZE,
+                            CONSTY + j*SIZE + (coordonnees.posx*SIZE) -20F,
+                            CONSTX+ i*SIZE + (coordonnees.posy*SIZE) -20F,
+                            CONSTY + SIZE +(j*SIZE) + (coordonnees.posx*SIZE) + 20F,
+                            CONSTX +SIZE + (i*SIZE)  + (coordonnees.posy*SIZE) + 20F,
                             paint)
-                        paint.color = Color.argb(30,255,255, 255)
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            canvas.drawRoundRect(
-                                j*SIZE + SIZE*1/8,
-                                i*SIZE + SIZE*1/8,
-                                j*SIZE + SIZE - SIZE*1/8,
-                                i*SIZE + SIZE - SIZE*1/8,
-                                10F,
-                                10F,
-                                paint)
-                        };
+
                     }
                 }
             }
@@ -168,12 +170,13 @@ open class Figure(
     // Dessine la figure
     fun draw(canvas: Canvas?, SIZE : Float, CONSTX : Float, CONSTY : Float){
         val paint = Paint()
+        drawBordure(canvas, SIZE, CONSTX, CONSTY)
         if (canvas != null) {
                 for (i in 0 until hitBox){
                 for (j in 0 until hitBox){
                     if( blocs[i][j] != null){
-                        blocs[i][j]!!.color = color
-                        paint.color = blocs[i][j]!!.color
+//                        blocs[i][j]!!.color = color
+                        paint.color = color
                         canvas.drawRect(
                             CONSTY + j*SIZE + (coordonnees.posx*SIZE),
                             CONSTX+ i*SIZE + (coordonnees.posy*SIZE),
@@ -195,6 +198,7 @@ open class Figure(
                 }
             }
         }
+
     }
 
 }

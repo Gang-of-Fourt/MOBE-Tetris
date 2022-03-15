@@ -6,11 +6,9 @@ import com.example.tetris.models.figures.RandomFigure
 import kotlin.random.Random
 
 // S'occupe de faire tomber, pivoter et décaler les pieces
-class GameFallThread (var surfaceHolder : SurfaceHolder, var gameView : GameView) : Thread() {
+class GameSaveFigureThread (var surfaceHolder : SurfaceHolder, var gameView : GameView) : Thread() {
 
     private var running : Boolean = false
-
-    fun getDuration() =  1500F/ gameView.valuesAccelerometerY.coerceAtLeast(2F)
 
     fun setRunning(isRunning: Boolean) {
         running = isRunning
@@ -21,8 +19,7 @@ class GameFallThread (var surfaceHolder : SurfaceHolder, var gameView : GameView
 //            canvas = surfaceHolder.lockCanvas();
 
             synchronized(surfaceHolder) {
-
-                gameView.fall()
+                gameView.save()
             }
         } catch (e: Exception) {}
         finally {
@@ -34,6 +31,6 @@ class GameFallThread (var surfaceHolder : SurfaceHolder, var gameView : GameView
                 }
             }
         }
-        gameView.handler.postDelayed(this, getDuration().toLong())
+        gameView.handler.postDelayed(this, 16)
     }
 }
