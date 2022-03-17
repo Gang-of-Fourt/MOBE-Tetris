@@ -1,15 +1,19 @@
 package com.example.tetris
 
 import android.content.Context
+import android.content.pm.ActivityInfo
 import android.graphics.Canvas
 import android.graphics.Color
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
+import android.hardware.SensorManager
+import android.os.Build
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.view.View
+import androidx.annotation.RequiresApi
 import com.example.tetris.models.*
 import com.example.tetris.models.figures.*
 import kotlin.math.pow
