@@ -71,6 +71,7 @@ class Grille(
 
     // Si le joueur a perdu
     fun isGameOver() : Boolean{
+//        if(figureCurrent)
         for (i in 0 until width) {
            if (cases[0][i] != null){
                return true

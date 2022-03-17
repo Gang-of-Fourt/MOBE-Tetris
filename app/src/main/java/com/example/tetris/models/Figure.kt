@@ -135,8 +135,9 @@ open class Figure(
     }
 
     fun changeColorLight(lightSensor : Float){
-        val alpha = (255 - (lightSensor*18.47).toInt() + 50 )
+        val alpha = (255-((255F / 850F) * lightSensor).toInt()).coerceAtLeast(0)
         println("light : $alpha")
+        println("light : $lightSensor")
         colorBordure = Color.argb(alpha, 0, 0, 255)
     }
 

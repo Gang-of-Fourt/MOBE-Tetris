@@ -43,6 +43,8 @@ class GameView(context: Context) : SurfaceHolder.Callback , SurfaceView(context)
 
     var highScore = HighScore()
 
+    val lightConstante = 900
+
     // Les coordonées de l'ecran quand le joueur le touche
     private var touch = mutableListOf(0F, 0F)
 
@@ -116,13 +118,13 @@ class GameView(context: Context) : SurfaceHolder.Callback , SurfaceView(context)
 
     // Vérifie s'il faut save la figure et la save si c'est la cas
     fun save(){
-        println("light : $lightSensor")
+//        println("light : $lightSensor")
         if (!grille.isGameOver()) {
             if (!currentFigure.hasItGround(grille)) {
                 currentFigure.changeColorLight(lightSensor)
 
-                // Si la figure est save
-                if(lightSensor<10 && !saveFigure.alreadySave){
+                // Si la figure est save (Si la lumière ambiante atteint 1% de luminosité)
+                if(lightSensor< lightConstante*0.1 && !saveFigure.alreadySave){
                     saveFigure.addFigure(currentFigure)
                     currentFigure = nextFigure.figure
                     nextFigure.figure = RandomFigure.chooseFigure()
