@@ -158,7 +158,9 @@ class GameView(context: Context) : SurfaceHolder.Callback , SurfaceView(context)
                 // Si la figure courante n'a pas touché le sol
             } else {
                 // Dessine uniquement les fgigures qui composent la grille si le joueur a perdu sa partie
+                canvas.drawColor(Color.GRAY)
                 grille.draw(canvas!!, SIZE, CONSTX, CONSTY)
+                highScore.draw(canvas)
             }
         }
     }
@@ -214,10 +216,6 @@ class GameView(context: Context) : SurfaceHolder.Callback , SurfaceView(context)
     override fun surfaceCreated(holder: SurfaceHolder) {
         gameDrawThread.setRunning(true)
         gameDrawThread.start()
-//        gameFallThread.setRunning(false)
-//        gameFallThread.start()
-//        gameSaveFigureThread.setRunning(false)
-//        gameSaveFigureThread.start()
         calibrationThread.setRunning(true)
         calibrationThread.start()
     }

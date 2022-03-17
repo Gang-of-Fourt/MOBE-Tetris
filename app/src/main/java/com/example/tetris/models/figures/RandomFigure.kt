@@ -9,7 +9,7 @@ class RandomFigure {
         //Choisi une figure aléatoirement
         fun chooseFigure() : Figure {
             val randomId = Random.nextInt(0, 7)
-            val color = Color.rgb(Random.nextInt(150, 255), Random.nextInt(150, 255), Random.nextInt(150, 255))
+            val color = Color.rgb(Random.nextInt(100, 200), Random.nextInt(100, 200), Random.nextInt(100, 200))
             when (randomId) {
                 0 -> return Baton(color, Random.nextInt(0, 2))
                 1 -> return Carre(color)

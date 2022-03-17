@@ -30,10 +30,14 @@ open class Figure(
     fun doCopy() : Figure {
         val saveFigure = Figure(nom, coordonnees, color, hitBox, nbRotate, currentRotate)
         saveFigure.blocs = blocs.copyOf()
-        saveFigure.rotate0 = rotate0.copyOf()
-        saveFigure.rotate1 = rotate1.copyOf()
-        saveFigure.rotate2 = rotate2.copyOf()
-        saveFigure.rotate3 = rotate3.copyOf()
+        if (nbRotate != 0) {
+            saveFigure.rotate0 = rotate0.copyOf()
+            saveFigure.rotate1 = rotate1.copyOf()
+            if (nbRotate > 2) {
+                saveFigure.rotate2 = rotate2.copyOf()
+                saveFigure.rotate3 = rotate3.copyOf()
+            }
+        }
         return saveFigure
     }
 
