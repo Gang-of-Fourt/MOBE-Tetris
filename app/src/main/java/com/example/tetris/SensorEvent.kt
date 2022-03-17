@@ -45,9 +45,6 @@ class SensorEvent (context : Context, private val gameView : GameView) : SensorE
                         gameView.currentFigure.rotate(EnumSens.SENS_ANTIHORAIRE, gameView.grille)
                         timeSave = System.currentTimeMillis()
                     }
-                    if(event.values[0] < -2){
-                        gameView.useSaveFigure()
-                    }
                 }
             }
             Sensor.TYPE_LIGHT -> {

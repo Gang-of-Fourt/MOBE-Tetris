@@ -173,10 +173,12 @@ class GameView(context: Context) : SurfaceHolder.Callback , SurfaceView(context)
                 // Si la figure est save (Si la lumière ambiante atteint 1% de luminosité)
                 if(lightSensor< lightConstant*0.2 && !saveFigure.alreadySave){
 
+                    //Echange lea figure save avec la courrante
                     if (saveFigure.figure != null){
                         val itermediateFigure = saveFigure.figure!!.doCopy()
                         saveFigure.addFigure(currentFigure.doCopy())
                         currentFigure = itermediateFigure
+                    // Ajoute une figure dans la saveFigure
                     } else {
                         saveFigure.addFigure(currentFigure)
                         currentFigure = nextFigure.figure
@@ -205,14 +207,6 @@ class GameView(context: Context) : SurfaceHolder.Callback , SurfaceView(context)
                     highScore.addScore(lineFull.size)
                 }
             }
-        }
-    }
-
-    //Utilise la figure sauvgardé
-    fun useSaveFigure(){
-        if (saveFigure.figure != null){
-            currentFigure = saveFigure.figure!!
-            saveFigure.figure = null
         }
     }
 
