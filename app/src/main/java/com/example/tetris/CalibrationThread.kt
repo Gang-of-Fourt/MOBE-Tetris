@@ -1,11 +1,9 @@
 package com.example.tetris
 
-import android.view.SurfaceHolder
 import android.graphics.Canvas
-import kotlin.random.Random
+import android.view.SurfaceHolder
 
-// S'occupe de dessiner le jeu sur le téléphone
-class GameDrawThread (var surfaceHolder : SurfaceHolder, var gameView : GameView) : Thread() {
+class CalibrationThread(var surfaceHolder : SurfaceHolder, var gameView: GameView) : Thread() {
 
     private var running : Boolean = false
 
@@ -18,7 +16,7 @@ class GameDrawThread (var surfaceHolder : SurfaceHolder, var gameView : GameView
             canvas = surfaceHolder.lockCanvas();
 
             synchronized(surfaceHolder) {
-                gameView.draw(canvas);
+                gameView.calibrate();
             }
         } catch (e: Exception) {}
         finally {
@@ -31,6 +29,6 @@ class GameDrawThread (var surfaceHolder : SurfaceHolder, var gameView : GameView
             }
         }
         if (running)
-            gameView.handler.postDelayed(this, 16)
+            gameView.handler.postDelayed(this, 400)
     }
 }

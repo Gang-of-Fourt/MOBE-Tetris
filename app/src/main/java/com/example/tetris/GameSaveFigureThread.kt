@@ -31,6 +31,7 @@ class GameSaveFigureThread (var surfaceHolder : SurfaceHolder, var gameView : Ga
                 }
             }
         }
-        gameView.handler.postDelayed(this, 16)
+        if (running)
+            gameView.handler.postDelayed(this, 16)
     }
 }

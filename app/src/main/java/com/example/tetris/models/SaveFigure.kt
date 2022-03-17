@@ -19,13 +19,25 @@ class SaveFigure(var figure : Figure?) {
 
     fun draw(canvas: Canvas?, SIZE : Float){
         if (canvas != null) {
-            val paint = Paint()
-            paint.textSize = 40F
-            paint.color = Color.DKGRAY
+            val paintText = Paint()
+            val paintBackgournd = Paint()
+            paintText.textSize = 40F
+            paintText.color = Color.WHITE
+
+            paintBackgournd.color = Color.DKGRAY
+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                canvas.drawRoundRect(canvas.width.toFloat()*1/4 + 40F, 20F, canvas.width.toFloat()*1/2 + 20F, canvas.height.toFloat()*1/6,10F, 10F, paint)
+                canvas.drawRoundRect(
+                    canvas.width.toFloat()*1/4 + 40F,
+                    20F,
+                    canvas.width.toFloat()*1/2 + 20F,
+                    canvas.height.toFloat()*1/6,
+                    10F,
+                    10F,
+                    paintBackgournd)
             }
-            canvas.drawText("Save : ", canvas.width.toFloat()*1/3 , 60F, paint)
+
+            canvas.drawText("Save : ", canvas.width.toFloat()*1/3 , 60F, paintText)
             drawSaveFigure(canvas, SIZE)
 
         }

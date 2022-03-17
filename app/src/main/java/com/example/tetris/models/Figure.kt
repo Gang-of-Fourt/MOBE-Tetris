@@ -30,11 +30,15 @@ open class Figure(
     fun doCopy() : Figure {
         val saveFigure = Figure(nom, coordonnees, color, hitBox, nbRotate, currentRotate)
         saveFigure.blocs = blocs.copyOf()
+        saveFigure.rotate0 = rotate0.copyOf()
+        saveFigure.rotate1 = rotate1.copyOf()
+        saveFigure.rotate2 = rotate2.copyOf()
+        saveFigure.rotate3 = rotate3.copyOf()
         return saveFigure
     }
 
     // Vérifie sir la figure courante est dans un obstacle (autre figure ou en dehors de la grille)
-    private fun isInObstacle(grille : Grille) : Boolean{
+    fun isInObstacle(grille : Grille) : Boolean{
         for (i in 0 until hitBox) {
             for (j in 0 until hitBox) {
                 if(blocs[i][j] != null){
@@ -134,10 +138,8 @@ open class Figure(
         }
     }
 
-    fun changeColorLight(lightSensor : Float){
-        val alpha = (255-((255F / 850F) * lightSensor).toInt()).coerceAtLeast(0)
-        println("light : $alpha")
-        println("light : $lightSensor")
+    fun changeColorLight(lightSensor : Float, lightConstant : Int){
+        val alpha = (255-((255F / lightConstant.toFloat()) * lightSensor).toInt()).coerceAtLeast(0)
         colorBordure = Color.argb(alpha, 0, 0, 255)
     }
 
@@ -184,6 +186,7 @@ open class Figure(
                             CONSTY + SIZE +(j*SIZE) + (coordonnees.posx*SIZE),
                             CONSTX +SIZE + (i*SIZE)  + (coordonnees.posy*SIZE),
                             paint)
+
                         paint.color = Color.argb(30,255,255, 255)
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                             canvas.drawRoundRect(

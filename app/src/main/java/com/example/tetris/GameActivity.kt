@@ -18,6 +18,6 @@ class GameActivity : AppCompatActivity()  {
 
     override fun onResume() {
         super.onResume()
-        sensorEvent.onResume()
+            sensorEvent.onResume()
         }
 }

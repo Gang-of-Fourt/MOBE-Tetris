@@ -34,6 +34,7 @@ class GameFallThread (var surfaceHolder : SurfaceHolder, var gameView : GameView
                 }
             }
         }
-        gameView.handler.postDelayed(this, getDuration().toLong())
+        if (running)
+            gameView.handler.postDelayed(this, getDuration().toLong())
     }
 }
