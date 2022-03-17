@@ -70,7 +70,7 @@ class Grille(
     }
 
     // Si le joueur a perdu
-    fun isGameOver(figureCurrent : Figure) : Boolean{
+    fun isGameOver(figureCurrent : Figure) : Boolean {
         if(figureCurrent.isInObstacle(this)){
             return true
         }

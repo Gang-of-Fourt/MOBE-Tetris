@@ -13,7 +13,6 @@ class GameActivity : AppCompatActivity()  {
 
     lateinit var gameView : GameView
     lateinit var sensorEvent : SensorEvent
-    lateinit var mediaPlayer : MediaPlayer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,8 +26,8 @@ class GameActivity : AppCompatActivity()  {
         // TODO Tester si les capteurs sont présents sur le tel
         gameView = GameView(this)
         sensorEvent = SensorEvent(this, gameView)
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(gameView)
-
     }
 
     override fun onResume() {

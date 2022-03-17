@@ -3,4 +3,8 @@
     <string name="play">Jouer</string>
     <string name="score">Score</string>
     <string name="calibrate">Callibrer</string>
+    <string name="menu">Menu</string>
+    <string name="replay">Rejouer</string>
+    <string name="yourScore">Votre score :</string>
+    <string name="points">points</string>
 </resources>

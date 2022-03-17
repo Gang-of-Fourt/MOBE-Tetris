@@ -1,6 +1,8 @@
 package com.example.tetris
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.graphics.Canvas
 import android.graphics.Color
@@ -9,12 +11,14 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.media.MediaPlayer
 import android.os.Build
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.view.View
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat.startActivity
 import com.example.tetris.models.*
 import com.example.tetris.models.figures.*
 import kotlin.math.pow
@@ -27,6 +31,8 @@ class GameView(context: Context) : SurfaceHolder.Callback , SurfaceView(context)
     private var gameFallThread = GameFallThread(holder, this)
     private var gameSaveFigureThread = GameSaveFigureThread(holder, this)
     private var calibrationThread = CalibrationThread(holder, this)
+    private var musicGame = MediaPlayer.create(context, R.raw.gamemusic)
+    private var musicLose = MediaPlayer.create(context, R.raw.gamelose)
 
     var valuesAccelerometerY = 0F
     var lightSensor = 0F
@@ -141,6 +147,16 @@ class GameView(context: Context) : SurfaceHolder.Callback , SurfaceView(context)
                 canvas.drawColor(Color.GRAY)
                 grille.draw(canvas, SIZE, CONSTX, CONSTY)
                 highScore.draw(canvas)
+                musicGame.stop()
+                musicLose.start()
+                gameFallThread.setRunning(false)
+                gameDrawThread.setRunning(false)
+                gameSaveFigureThread.setRunning(false)
+                val myIntent = Intent(context, ScoreActivity::class.java)
+                myIntent.putExtra("score", "${highScore.score}")
+                context.startActivity(myIntent)
+                (context as Activity).finish()
+
             }
         }
     }
@@ -219,6 +235,7 @@ class GameView(context: Context) : SurfaceHolder.Callback , SurfaceView(context)
         gameDrawThread.start()
         calibrationThread.setRunning(true)
         calibrationThread.start()
+        musicGame.start()
     }
 
     override fun surfaceDestroyed(holder: SurfaceHolder) {
