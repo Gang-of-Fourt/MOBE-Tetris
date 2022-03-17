@@ -80,27 +80,6 @@ class GameView(context: Context) : SurfaceHolder.Callback , SurfaceView(context)
         return true
     }
 
-    fun calibrate(){
-        println("cal : ok")
-        lightTableForCalibration.add(lightSensor)
-        if(lightTableForCalibration.size > 10){
-            var moyenne = 0F
-            lightTableForCalibration.forEach { 
-                moyenne+=it 
-            }
-            moyenne /= lightTableForCalibration.size
-            lightConstant = moyenne.toInt()
-            doTheCalibration = false
-            calibrationThread.setRunning(false)
-            calibrationThread.interrupt()
-
-            gameFallThread.setRunning(true)
-            gameFallThread.start()
-            gameSaveFigureThread.setRunning(true)
-            gameSaveFigureThread.start()
-        }
-    }
-
     // Si le joueur a fait un swip sur l'ecran
     private fun isSwip() : Boolean{
         val distance = sqrt((unTouch[0] - touch[0]).pow(2) + (unTouch[1] - touch[1]).pow(2))
@@ -119,13 +98,14 @@ class GameView(context: Context) : SurfaceHolder.Callback , SurfaceView(context)
     override fun surfaceChanged(surfaceHolder: SurfaceHolder, i: Int, i1: Int, i2: Int) {}
 
 
+    //Dessine le layout de la calibration
     private fun drawCalibration(canvas: Canvas){
         val paint = Paint()
         paint.textAlign = Paint.Align.CENTER
         paint.textSize = 60F
         paint.color = Color.WHITE
         canvas.drawColor(Color.BLACK)
-        canvas.drawText("Calibration des capteurs en cour", (canvas.width/2).toFloat(), (canvas.height/2).toFloat(), paint)
+        canvas.drawText("Calibration des capteurs en cours", (canvas.width/2).toFloat(), (canvas.height/2).toFloat(), paint)
         val SIZEX = (canvas.width/10).toFloat()
         paint.color = Color.YELLOW
         for(i in 0 until lightTableForCalibration.size){
@@ -159,15 +139,33 @@ class GameView(context: Context) : SurfaceHolder.Callback , SurfaceView(context)
             } else {
                 // Dessine uniquement les fgigures qui composent la grille si le joueur a perdu sa partie
                 canvas.drawColor(Color.GRAY)
-                grille.draw(canvas!!, SIZE, CONSTX, CONSTY)
+                grille.draw(canvas, SIZE, CONSTX, CONSTY)
                 highScore.draw(canvas)
             }
         }
     }
 
+    fun calibrate(){
+        lightTableForCalibration.add(lightSensor)
+        if(lightTableForCalibration.size > 10){
+            var moyenne = 0F
+            lightTableForCalibration.forEach {
+                moyenne+=it
+            }
+            moyenne /= lightTableForCalibration.size
+            lightConstant = moyenne.toInt()
+            doTheCalibration = false
+            calibrationThread.setRunning(false)
+            calibrationThread.interrupt()
+            gameFallThread.setRunning(true)
+            gameFallThread.start()
+            gameSaveFigureThread.setRunning(true)
+            gameSaveFigureThread.start()
+        }
+    }
+
     // Vérifie s'il faut save la figure et la save si c'est la cas
     fun save(){
-//        println("light : $lightSensor")
         if (!grille.isGameOver(currentFigure)) {
             if (!currentFigure.hasItGround(grille)) {
                 currentFigure.changeColorLight(lightSensor, lightConstant)
@@ -180,11 +178,13 @@ class GameView(context: Context) : SurfaceHolder.Callback , SurfaceView(context)
                         val itermediateFigure = saveFigure.figure!!.doCopy()
                         saveFigure.addFigure(currentFigure.doCopy())
                         currentFigure = itermediateFigure
+                        currentFigure.canSave = false
                     // Ajoute une figure dans la saveFigure
                     } else {
                         saveFigure.addFigure(currentFigure)
                         currentFigure = nextFigure.figure
                         nextFigure.figure = RandomFigure.chooseFigure()
+                        currentFigure.canSave = false
                     }
                 }
             }
@@ -203,6 +203,7 @@ class GameView(context: Context) : SurfaceHolder.Callback , SurfaceView(context)
                 currentFigure = nextFigure.figure // choisi une nouvelle figure
                 nextFigure.figure = RandomFigure.chooseFigure()
                 saveFigure.alreadySave = false
+                currentFigure.canSave = true
                 val lineFull = grille.isLineFull() // Vérifie si une ligne de la grille est remplie
                 if (lineFull.isNotEmpty()) {
                     grille.deletLines(lineFull) // supprime les lignes remplies si eil y en a

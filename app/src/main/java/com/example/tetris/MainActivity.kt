@@ -24,10 +24,4 @@ class MainActivity : AppCompatActivity() {
         finish()
     }
 
-    fun calibrateClicked(v : View) {
-        mediaPlayer.stop()
-        val myIntent = Intent(this, GameActivity::class.java)
-        startActivity(myIntent)
-        finish()
-    }
 }

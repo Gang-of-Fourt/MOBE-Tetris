@@ -20,9 +20,9 @@ class GameActivity : AppCompatActivity()  {
         val windowInsetsController = ViewCompat.getWindowInsetsController(
             window.decorView
         )
-        if(windowInsetsController != null) {
-            windowInsetsController.hide(WindowInsetsCompat.Type.systemBars())
-        }
+//        if(windowInsetsController != null) {
+//            windowInsetsController.hide(WindowInsetsCompat.Type.systemBars())
+//        }
 
         // TODO Tester si les capteurs sont présents sur le tel
         gameView = GameView(this)

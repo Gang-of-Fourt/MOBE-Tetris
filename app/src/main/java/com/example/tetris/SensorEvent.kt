@@ -9,6 +9,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import com.example.tetris.models.EnumSens
 import java.lang.Math.abs
+import kotlin.system.exitProcess
 
 class SensorEvent (context : Context, private val gameView : GameView) : SensorEventListener {
 
@@ -26,6 +27,20 @@ class SensorEvent (context : Context, private val gameView : GameView) : SensorE
         accelerometre = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
         gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
         light = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT)
+
+        if (sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT) == null){
+            print("Capteur de luminosité non présent sur le device")
+            exitProcess(0)
+        }
+        if (sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE) == null){
+            print("Gyroscope non présent sur le device")
+            exitProcess(0)
+        }
+        if (sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) == null){
+            print("Accelerometre  non présent sur le device")
+            exitProcess(0)
+        }
+
     }
 
     override fun onSensorChanged(event: SensorEvent?) {

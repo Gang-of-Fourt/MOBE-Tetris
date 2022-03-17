@@ -23,6 +23,8 @@ open class Figure(
     lateinit var rotate2: Array<Array<Bloc?>>
     lateinit var rotate3: Array<Array<Bloc?>>
 
+    var canSave = true
+
     var colorBordure = Color.rgb( 255, 255, 255)
 
 
@@ -30,8 +32,8 @@ open class Figure(
     fun doCopy() : Figure {
         val saveFigure = Figure(nom, coordonnees, color, hitBox, nbRotate, currentRotate)
         saveFigure.blocs = blocs.copyOf()
-        if (nbRotate != 0) {
-            saveFigure.rotate0 = rotate0.copyOf()
+        saveFigure.rotate0 = rotate0.copyOf()
+        if (nbRotate > 1) {
             saveFigure.rotate1 = rotate1.copyOf()
             if (nbRotate > 2) {
                 saveFigure.rotate2 = rotate2.copyOf()
@@ -144,7 +146,12 @@ open class Figure(
 
     fun changeColorLight(lightSensor : Float, lightConstant : Int){
         val alpha = (255-((255F / lightConstant.toFloat()) * lightSensor).toInt()).coerceAtLeast(0)
-        colorBordure = Color.argb(alpha, 0, 0, 255)
+        if (canSave) {
+            colorBordure = Color.argb(alpha, 0, 0, 255)
+        }
+        else {
+            colorBordure = Color.argb(alpha, 255, 0, 0)
+        }
     }
 
     fun resetCoord(){
