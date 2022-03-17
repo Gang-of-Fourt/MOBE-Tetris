@@ -1,5 +1,6 @@
 package com.example.tetris
 
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.view.Window
 import android.view.WindowManager
@@ -12,6 +13,7 @@ class GameActivity : AppCompatActivity()  {
 
     lateinit var gameView : GameView
     lateinit var sensorEvent : SensorEvent
+    lateinit var mediaPlayer : MediaPlayer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,10 +28,11 @@ class GameActivity : AppCompatActivity()  {
         gameView = GameView(this)
         sensorEvent = SensorEvent(this, gameView)
         setContentView(gameView)
+
     }
 
     override fun onResume() {
         super.onResume()
-            sensorEvent.onResume()
-        }
+        sensorEvent.onResume()
+    }
 }
